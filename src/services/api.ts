@@ -1,4 +1,12 @@
-import { User, AuthDto, Auction } from "@/types";
+import {
+  User,
+  AuthDto,
+  Auction,
+  AuctionDashboardDto,
+  CreateAuctionCommand,
+  CreateAuctionBidCommand,
+  TelemetryBenchmarkResult,
+} from "@/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:5000";
 
@@ -31,7 +39,38 @@ export const api = {
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
 
-      return response.json();
+      const authData: AuthDto = await response.json();
+
+      // Decodificar el JWT AccessToken para extraer las claims del usuario
+      let user: User = {
+        id: "",
+        email: "",
+        userName: "",
+        permissions: [],
+      };
+
+      try {
+        const payloadBase64 = authData.accessToken.split(".")[1];
+        const decodedPayload = JSON.parse(
+          typeof window !== "undefined"
+            ? atob(payloadBase64)
+            : Buffer.from(payloadBase64, "base64").toString("utf-8")
+        );
+
+        user = {
+          id: decodedPayload.sub || "",
+          email: decodedPayload.email || "",
+          userName: decodedPayload.unique_name || "",
+          permissions: [], // Las autorizaciones dinámicas se manejan por sesión en backend/cache
+        };
+      } catch (err) {
+        console.error("Error decodificando token de sesión:", err);
+      }
+
+      return {
+        user,
+        auth: authData,
+      };
     },
   },
 
@@ -44,6 +83,92 @@ export const api = {
 
       if (!response.ok) {
         throw new Error("Error al obtener subastas activas");
+      }
+
+      return response.json();
+    },
+
+    async getById(id: string): Promise<Auction> {
+      const response = await fetch(`${BASE_URL}/api/auctions/${id}`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Error al obtener la subasta con ID ${id}`);
+      }
+
+      return response.json();
+    },
+
+    async getDashboard(id: string): Promise<AuctionDashboardDto> {
+      const response = await fetch(`${BASE_URL}/api/auctions/${id}/dashboard`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Error al obtener el dashboard de la subasta ${id}`);
+      }
+
+      return response.json();
+    },
+
+    async create(command: CreateAuctionCommand): Promise<{ id: string }> {
+      const response = await fetch(`${BASE_URL}/api/auctions`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(command),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al crear la subasta");
+      }
+
+      return response.json();
+    },
+
+    async placeBid(id: string, command: CreateAuctionBidCommand): Promise<{ id: string }> {
+      const response = await fetch(`${BASE_URL}/api/auctions/${id}/bids`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(command),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al realizar la puja");
+      }
+
+      return response.json();
+    },
+  },
+
+  telemetry: {
+    async process(method: "span" | "naive", rawData: string): Promise<void> {
+      const response = await fetch(`${BASE_URL}/api/telemetry?method=${method}`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(rawData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al procesar telemetría");
+      }
+    },
+
+    async benchmark(rawData: string): Promise<TelemetryBenchmarkResult> {
+      const response = await fetch(`${BASE_URL}/api/telemetry/benchmark`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(rawData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al ejecutar benchmark de telemetría");
       }
 
       return response.json();

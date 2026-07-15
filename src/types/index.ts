@@ -20,3 +20,58 @@ export interface Auction {
   endTime: string;
   imageUrl: string;
 }
+
+export interface BidDto {
+  id: string;
+  bidderName: string;
+  amount: number;
+  currencyCode: string;
+  createdAt: string;
+}
+
+export interface AuctionDashboardDto {
+  id: string;
+  title: string;
+  startingPrice: number;
+  startingCurrency: string;
+  historicBids: BidDto[];
+}
+
+export interface CreateAuctionCommand {
+  vin: string;
+  marquee: string;
+  model: string;
+  year: number;
+  mileage: number;
+  auctioneerId?: string; // Seteado por claims en backend
+  startingPrice: number;
+  endTime: string;
+  idempotencyKey: string;
+}
+
+export interface CreateAuctionBidCommand {
+  auctionId?: string; // Seteado desde la ruta en backend
+  auctioneerId?: string; // Seteado por claims en backend
+  amount: number;
+  idempotencyKey: string;
+}
+
+export interface TelemetryBenchmarkResult {
+  iterations: number;
+  naive: {
+    timeMs: number;
+    gen0Collections: number;
+    gen1Collections: number;
+    gen2Collections: number;
+  };
+  span: {
+    timeMs: number;
+    gen0Collections: number;
+    gen1Collections: number;
+    gen2Collections: number;
+  };
+  improvement: {
+    timeSavingPercent: number;
+    garbageReductionPercent: number;
+  };
+}

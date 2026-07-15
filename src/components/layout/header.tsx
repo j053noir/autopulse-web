@@ -24,7 +24,10 @@ export function Header() {
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
-            {lang === "es" ? "Subastas" : "Auctions"}
+            {lang === "es" ? "Inicio" : "Home"}
+          </Link>
+          <Link href={`/${lang}/auctions`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+            {lang === "es" ? "Panel Virtual" : "Virtualized Panel"}
           </Link>
           <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
             {lang === "es" ? "Historial" : "History"}

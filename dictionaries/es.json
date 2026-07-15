@@ -13,5 +13,38 @@
       "portalTerms": "Términos del Portal",
       "portalTermsDesc": "Las ofertas en AutoPulse son vinculantes. Lee con detenimiento las cláusulas de garantía."
     }
+  },
+  "auctions": {
+    "bidSuccess": "¡Puja realizada con éxito!",
+    "errors": {
+      "prefix": "Error al realizar la puja",
+      "unauthorized": "Debes iniciar sesión para poder realizar una oferta.",
+      "forbidden": "No tienes los permisos requeridos para ofertar.",
+      "higherPrice": "El monto de la oferta debe ser mayor al precio actual.",
+      "closedOrExpired": "No se puede ofertar en una subasta cerrada o expirada.",
+      "generic": "Ocurrió un error inesperado al ofertar."
+    }
+  },
+  "virtualPanel": {
+    "title": "Panel de Subastas Virtualizado",
+    "subtitle": "Catálogo de alto rendimiento optimizado con virtualización de DOM para scroll rápido sobre miles de registros.",
+    "loading": "Cargando listado de subastas...",
+    "error": "Error al cargar subastas",
+    "retry": "Reintentar",
+    "activeCount": "subastas activas",
+    "renderedItems": "Items renderizados"
+  },
+  "analytics": {
+    "title": "Panel Analítico de Subastas en Vivo",
+    "bidActivity": "Actividad de Pujas",
+    "activityLevel": "Alta (+45/min)",
+    "averageBid": "Oferta Promedio",
+    "participants": "Participantes",
+    "activeCount": "312 Activos"
+  },
+  "item": {
+    "ends": "Termina",
+    "lastBid": "Última Puja",
+    "bidButton": "Ofertar"
   }
 }

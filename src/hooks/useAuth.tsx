@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string, closeActiveSessions?: boolean) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await api.auth.login(email, password, closeActiveSessions);
       localStorage.setItem("accessToken", data.auth.accessToken);
+      localStorage.setItem("refreshToken", data.auth.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
     } finally {
@@ -44,8 +45,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (accessToken && refreshToken) {
+      try {
+        await api.auth.logout(accessToken, refreshToken);
+      } catch (err) {
+        console.error("Error at backend logout:", err);
+      }
+    }
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     setUser(null);
   };

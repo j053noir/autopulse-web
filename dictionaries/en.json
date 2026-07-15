@@ -13,5 +13,38 @@
       "portalTerms": "Portal Terms",
       "portalTermsDesc": "Bids on AutoPulse are binding. Read the warranty clauses carefully."
     }
+  },
+  "auctions": {
+    "bidSuccess": "Bid placed successfully!",
+    "errors": {
+      "prefix": "Error placing bid",
+      "unauthorized": "You must be logged in to place a bid.",
+      "forbidden": "You do not have the required permissions to place a bid.",
+      "higherPrice": "The bid amount must be higher than the current price.",
+      "closedOrExpired": "Cannot place a bid on a closed or expired auction.",
+      "generic": "An unexpected error occurred while placing your bid."
+    }
+  },
+  "virtualPanel": {
+    "title": "Virtualized Auction Panel",
+    "subtitle": "High-performance catalog optimized with DOM virtualization for rapid scrolling over thousands of records.",
+    "loading": "Loading auction list...",
+    "error": "Error loading auctions",
+    "retry": "Retry",
+    "activeCount": "active auctions",
+    "renderedItems": "Rendered items"
+  },
+  "analytics": {
+    "title": "Live Auctions Analytical Panel",
+    "bidActivity": "Bid Activity",
+    "activityLevel": "High (+45/min)",
+    "averageBid": "Average Bid",
+    "participants": "Participants",
+    "activeCount": "312 Active"
+  },
+  "item": {
+    "ends": "Ends",
+    "lastBid": "Current Bid",
+    "bidButton": "Bid"
   }
 }

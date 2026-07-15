@@ -59,8 +59,8 @@ export default function HomePage({
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className={`flex items-center gap-2 border transition-all ${
                 theme === "dark"
-                  ? "border-gray-800 text-gray-300 hover:text-white hover:bg-slate-800"
-                  : "border-slate-300 text-slate-700 hover:text-slate-950 hover:bg-slate-100"
+                  ? "!border-gray-800 !text-gray-300 hover:!text-white hover:bg-slate-800"
+                  : "!border-slate-300 !text-slate-700 hover:!text-slate-950 hover:bg-slate-100"
               }`}
             >
               {theme === "dark" ? "☀️ Light" : "🌙 Dark"}

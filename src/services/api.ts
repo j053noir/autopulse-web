@@ -72,6 +72,50 @@ export const api = {
         auth: authData,
       };
     },
+
+    async register(username: string, email: string, password: string): Promise<{ id: string }> {
+      const idempotencyKey = typeof window !== "undefined" ? window.crypto.randomUUID() : "server-register-key";
+      const response = await fetch(`${BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password, idempotencyKey }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al registrarse");
+      }
+
+      return response.json();
+    },
+
+    async refreshToken(accessToken: string, refreshToken: string): Promise<AuthDto> {
+      const response = await fetch(`${BASE_URL}/api/auth/refresh-token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken, refreshToken }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al refrescar token");
+      }
+
+      return response.json();
+    },
+
+    async logout(accessToken: string, refreshToken: string): Promise<void> {
+      const response = await fetch(`${BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken, refreshToken }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al cerrar sesión");
+      }
+    },
   },
 
   auctions: {
@@ -151,7 +195,8 @@ export const api = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al realizar la puja");
+        const errorMessage = errorData.detail || errorData.title || errorData.message || `HTTP ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       return response.json();

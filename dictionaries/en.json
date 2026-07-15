@@ -1,0 +1,17 @@
+{
+  "home": {
+    "title": "AutoPulse Auction Ecosystem",
+    "subtitle": "Scalable React architecture for real-time vehicle management.",
+    "tabs": {
+      "activeAuctions": "🔥 Active Auctions",
+      "recentHistory": "🕒 Recent History",
+      "gameRules": "📋 Rules of the Game",
+      "sportsAuctions": "Sports Cars Auctions",
+      "sportsAuctionsDesc": "Explore active bids for verified sports vehicles on AutoPulse.",
+      "lastPurchases": "Your Last Purchases",
+      "lastPurchasesDesc": "Access the chronological record of your previous bids and awarded vehicles.",
+      "portalTerms": "Portal Terms",
+      "portalTermsDesc": "Bids on AutoPulse are binding. Read the warranty clauses carefully."
+    }
+  }
+}

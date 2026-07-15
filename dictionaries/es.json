@@ -1,0 +1,17 @@
+{
+  "home": {
+    "title": "Ecosistema de Subastas AutoPulse",
+    "subtitle": "Arquitectura escalable en React para la gestión de vehículos en tiempo real.",
+    "tabs": {
+      "activeAuctions": "🔥 Subastas Activas",
+      "recentHistory": "🕒 Historial Reciente",
+      "gameRules": "📋 Reglas de Juego",
+      "sportsAuctions": "Subastas de Carros Deportivos",
+      "sportsAuctionsDesc": "Explora las pujas activas de los vehículos deportivos verificados de AutoPulse.",
+      "lastPurchases": "Tus últimas compras",
+      "lastPurchasesDesc": "Accede al registro cronológico de tus ofertas anteriores y vehículos adjudicados.",
+      "portalTerms": "Términos del Portal",
+      "portalTermsDesc": "Las ofertas en AutoPulse son vinculantes. Lee con detenimiento las cláusulas de garantía."
+    }
+  }
+}

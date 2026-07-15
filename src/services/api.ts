@@ -85,7 +85,18 @@ export const api = {
         throw new Error("Error al obtener subastas activas");
       }
 
-      return response.json();
+      const data = await response.json();
+      return data.map((item: any) => ({
+        id: item.id,
+        title: item.vehicle ? `${item.vehicle.year} ${item.vehicle.marquee} ${item.vehicle.model}` : "Vehículo",
+        description: item.vehicle 
+          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi` 
+          : "Detalles no disponibles",
+        basePrice: item.startingPrice ?? 0,
+        currentBid: item.currentPrice ?? 0,
+        endTime: item.endTime,
+        imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+      }));
     },
 
     async getById(id: string): Promise<Auction> {

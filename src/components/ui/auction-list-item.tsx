@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Button } from "./button";
+import { useAuth } from "@/hooks/useAuth";
+import { useCarsXEImages } from "@/hooks/useCarsXEImages";
 
 export interface AuctionListItemProps {
   id: string;
@@ -21,14 +23,37 @@ export interface AuctionListItemProps {
 export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
   ({ id, title, currentBid, endTime, imageUrl, onBid, dict }) => {
     const formattedEndTime = new Date(endTime).toLocaleDateString();
+    const { user } = useAuth();
+    const canBid = user?.permissions?.includes("auctions:bid");
+
+    // Parse the title which is formatted as "Year Make Model" (e.g. "2019 Jaguar F-Pace")
+    const titleParts = title.split(" ");
+    const hasYear = titleParts.length > 0 && /^\d{4}$/.test(titleParts[0]);
+    const carYear = hasYear ? titleParts[0] : undefined;
+    const carMake = hasYear ? titleParts[1] : titleParts[0];
+    const carModel = hasYear ? titleParts.slice(2).join(" ") : titleParts.slice(1).join(" ");
+
+    // Call the query hook to resolve the image from CarsXE API
+    const { data: carsxeData } = useCarsXEImages(
+      {
+        make: carMake || "",
+        model: carModel || "",
+        year: carYear,
+      },
+      !!carMake && !!carModel
+    );
+
+    // Fallback chain: CarsXE image -> Backend default image placeholder
+    const carsxeImage = carsxeData?.images?.[0]?.link;
+    const displayImageUrl = carsxeImage || imageUrl;
 
     return (
       <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-brand-surface border border-slate-800 rounded-lg hover:border-brand-accent/50 transition-all duration-300 gap-4 w-full h-[120px] box-border">
         <div className="flex items-center gap-4 w-full sm:w-auto">
-          <div className="h-16 w-24 rounded overflow-hidden bg-slate-900 flex-shrink-0">
+          <div className="h-16 w-24 rounded overflow-hidden bg-slate-900 flex-shrink-0 flex items-center justify-center relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={imageUrl}
+              src={displayImageUrl}
               alt={title}
               className="w-full h-full object-cover"
             />
@@ -51,14 +76,16 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
             </span>
           </div>
 
-          <Button
-            size="sm"
-            variant="primary"
-            className="hover:scale-105 transition-transform duration-200"
-            onClick={() => onBid(id)}
-          >
-            {dict.bidButton}
-          </Button>
+          {canBid && (
+            <Button
+              size="sm"
+              variant="primary"
+              className="hover:scale-105 transition-transform duration-200"
+              onClick={() => onBid(id)}
+            >
+              {dict.bidButton}
+            </Button>
+          )}
         </div>
       </div>
     );

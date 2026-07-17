@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/header";
 import { useUIStore } from "@/hooks/useUIStore";
 import { useAuctionsQuery } from "@/hooks/useAuctionsQuery";
+import { AuctionCard } from "@/components/ui/auction-card";
 
 // Importación de diccionarios directamente para uso del lado del cliente
 import en from "@/../dictionaries/en.json";
@@ -164,73 +165,13 @@ export default function HomePage({
               // Listado de Subastas
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {auctions.map((auction) => (
-                  <Card 
-                    key={auction.id} 
-                    className={`flex flex-col h-full transition-all ${
-                      theme === "dark"
-                        ? "bg-brand-surface border-gray-800 text-white"
-                        : "bg-white border-slate-200 text-slate-900"
-                    }`}
-                  >
-                    <div className="relative h-48 w-full overflow-hidden bg-slate-900">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={auction.imageUrl}
-                        alt={auction.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                      <div className="absolute top-3 right-3 bg-brand-accent text-white text-xs font-bold px-2 py-1 rounded shadow-md">
-                        {lang === "es" ? "EN VIVO" : "LIVE"}
-                      </div>
-                    </div>
-
-                    <Card.Header className={theme === "light" ? "border-slate-100" : ""}>
-                      <h3 className="text-lg font-bold line-clamp-1">{auction.title}</h3>
-                    </Card.Header>
-
-                    <Card.Content className="flex-1">
-                      <p className={`text-sm line-clamp-3 mb-4 ${
-                        theme === "dark" ? "text-gray-400" : "text-gray-600"
-                      }`}>{auction.description}</p>
-                      <div className={`flex justify-between items-center text-sm p-3 rounded-lg border ${
-                        theme === "dark"
-                          ? "bg-black/20 border-gray-800"
-                          : "bg-slate-100/50 border-slate-200"
-                      }`}>
-                        <div>
-                          <span className={`block text-xs font-medium ${
-                            theme === "dark" ? "text-gray-500" : "text-gray-500"
-                          }`}>
-                            {lang === "es" ? "Oferta Inicial" : "Base Price"}
-                          </span>
-                          <span className="font-bold">${auction.basePrice.toLocaleString()}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="block text-xs text-brand-accent font-semibold">
-                            {lang === "es" ? "Última Puja" : "Current Bid"}
-                          </span>
-                          <span className="text-brand-accent font-extrabold text-base">
-                            ${auction.currentBid.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </Card.Content>
-
-                    <Card.Footer className={`flex items-center justify-between ${
-                      theme === "light" ? "border-slate-100 bg-slate-50/50" : ""
-                    }`}>
-                      <span className="text-xs text-gray-500">
-                        Termina: {new Date(auction.endTime).toLocaleDateString()}
-                      </span>
-                      <Button 
-                        size="sm" 
-                        variant="primary"
-                        onClick={() => setLastViewedAuctionId(auction.id)}
-                      >
-                        {lang === "es" ? "Ofertar Ahora" : "Bid Now"}
-                      </Button>
-                    </Card.Footer>
-                  </Card>
+                  <AuctionCard
+                    key={auction.id}
+                    auction={auction}
+                    theme={theme}
+                    lang={lang}
+                    onBidClick={(id) => setLastViewedAuctionId(id)}
+                  />
                 ))}
               </div>
             )}

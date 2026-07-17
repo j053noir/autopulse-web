@@ -46,5 +46,33 @@
     "ends": "Ends",
     "lastBid": "Current Bid",
     "bidButton": "Bid"
+  },
+  "modals": {
+    "placeBid": {
+      "title": "Place a Bid",
+      "currentBid": "Current Bid",
+      "yourBid": "Your Bid Amount",
+      "minAmount": "Must be greater than {min}",
+      "submit": "Place Bid",
+      "submitting": "Placing Bid...",
+      "placeholder": "Enter bid amount",
+      "errorLabel": "Bid must be higher than the current bid"
+    },
+    "createAuction": {
+      "title": "Create New Auction",
+      "vin": "VIN",
+      "marquee": "Marque / Brand",
+      "model": "Model",
+      "year": "Year",
+      "mileage": "Mileage (miles)",
+      "startingPrice": "Starting Price",
+      "currency": "Currency",
+      "endTime": "End Date & Time",
+      "submit": "Create Auction",
+      "submitting": "Creating...",
+      "success": "Auction created successfully!",
+      "error": "Failed to create auction"
+    },
+    "close": "Close"
   }
 }

@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useCallback, use } from "react";
+import React, { useCallback, use, useState } from "react";
 import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/header";
 import { useUIStore } from "@/hooks/useUIStore";
 import { useAuctionsQuery } from "@/hooks/useAuctionsQuery";
 import { useAuctionActions } from "@/hooks/useAuctionActions";
 import { VirtualizedAuctionList } from "@/components/ui/virtualized-auction-list";
+import { BidModal } from "@/components/ui/bid-modal";
+import { CreateAuctionModal } from "@/components/ui/create-auction-modal";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 import en from "@/../dictionaries/en.json";
 import es from "@/../dictionaries/es.json";
 
@@ -33,21 +37,24 @@ export default function AuctionsPage({
   const { lang } = use(params);
   const dict = dictionaries[lang as "en" | "es"] || dictionaries.en;
   const theme = useUIStore((state) => state.theme);
+  const isCreateAuctionOpen = useUIStore((state) => state.isCreateAuctionOpen);
+  const setCreateAuctionOpen = useUIStore((state) => state.setCreateAuctionOpen);
+  
   const { auctions, isLoading, isError, refetch } = useAuctionsQuery();
-  const { placeBid } = useAuctionActions();
+  const { placeBid, createAuction, isBidding, isCreating } = useAuctionActions();
+  const { user } = useAuth();
+
+  const [selectedBidAuction, setSelectedBidAuction] = useState<any | null>(null);
 
   // Stable callback handler for the individual rows
   const handleBid = useCallback(
     (id: string) => {
       const auction = auctions.find((a) => a.id === id);
       if (auction) {
-        // Quick interactive action: increase the current bid by $500
-        const bidIncrement = 500;
-        const newBidAmount = auction.currentBid + bidIncrement;
-        placeBid(id, newBidAmount);
+        setSelectedBidAuction(auction);
       }
     },
-    [auctions, placeBid]
+    [auctions]
   );
 
   return (
@@ -59,13 +66,24 @@ export default function AuctionsPage({
       <Header />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-black tracking-tight text-white mb-2">
-            {dict.virtualPanel.title}
-          </h1>
-          <p className="text-sm text-brand-muted">
-            {dict.virtualPanel.subtitle}
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-white mb-2">
+              {dict.virtualPanel.title}
+            </h1>
+            <p className="text-sm text-brand-muted">
+              {dict.virtualPanel.subtitle}
+            </p>
+          </div>
+          {user?.permissions?.includes("auctions:create") && (
+            <Button
+              onClick={() => setCreateAuctionOpen(true)}
+              variant="primary"
+              className="sm:self-end"
+            >
+              {lang === "es" ? "Crear Subasta" : "Create Auction"}
+            </Button>
+          )}
         </div>
 
         {/* Dynamic component loaded lazily */}
@@ -101,6 +119,23 @@ export default function AuctionsPage({
           </div>
         )}
       </main>
+
+      <BidModal
+        isOpen={selectedBidAuction !== null}
+        onClose={() => setSelectedBidAuction(null)}
+        auction={selectedBidAuction}
+        onPlaceBid={placeBid}
+        isSubmitting={isBidding}
+        dict={dict}
+      />
+
+      <CreateAuctionModal
+        isOpen={isCreateAuctionOpen}
+        onClose={() => setCreateAuctionOpen(false)}
+        onCreateAuction={createAuction}
+        isSubmitting={isCreating}
+        dict={dict}
+      />
     </div>
   );
 }

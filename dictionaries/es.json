@@ -46,5 +46,33 @@
     "ends": "Termina",
     "lastBid": "Última Puja",
     "bidButton": "Ofertar"
+  },
+  "modals": {
+    "placeBid": {
+      "title": "Realizar una Oferta",
+      "currentBid": "Oferta Actual",
+      "yourBid": "Monto de tu Oferta",
+      "minAmount": "Debe ser mayor que {min}",
+      "submit": "Ofertar",
+      "submitting": "Ofertando...",
+      "placeholder": "Ingresa el monto",
+      "errorLabel": "La oferta debe ser mayor al precio actual"
+    },
+    "createAuction": {
+      "title": "Crear Nueva Subasta",
+      "vin": "VIN",
+      "marquee": "Marca",
+      "model": "Modelo",
+      "year": "Año",
+      "mileage": "Kilometraje (millas)",
+      "startingPrice": "Precio Inicial",
+      "currency": "Moneda",
+      "endTime": "Fecha y Hora de Cierre",
+      "submit": "Crear Subasta",
+      "submitting": "Creando...",
+      "success": "¡Subasta creada con éxito!",
+      "error": "Error al crear la subasta"
+    },
+    "close": "Cerrar"
   }
 }

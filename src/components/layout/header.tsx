@@ -4,12 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useUIStore } from "@/hooks/useUIStore";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
   const { user, logout } = useAuth();
   const params = useParams();
   const lang = (params?.lang as string) || "en";
+  const setCreateAuctionOpen = useUIStore((state) => state.setCreateAuctionOpen);
 
   return (
     <header className="w-full bg-brand-dark/90 backdrop-blur-md border-b border-gray-800/80 sticky top-0 z-50 transition-all">
@@ -29,6 +31,14 @@ export function Header() {
           <Link href={`/${lang}/auctions`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
             {lang === "es" ? "Panel Virtual" : "Virtualized Panel"}
           </Link>
+          {user?.permissions?.includes("auctions:create") && (
+            <button
+              onClick={() => setCreateAuctionOpen(true)}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors cursor-pointer bg-transparent border-none"
+            >
+              {lang === "es" ? "Crear Subasta" : "Create Auction"}
+            </button>
+          )}
           <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
             {lang === "es" ? "Historial" : "History"}
           </Link>

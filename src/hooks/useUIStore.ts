@@ -5,10 +5,12 @@ interface UIState {
   isSidebarOpen: boolean;
   theme: "light" | "dark";
   lastViewedAuctionId: string | null;
+  isCreateAuctionOpen: boolean;
   toggleSidebar: () => void;
   setSidebarOpen: (isOpen: boolean) => void;
   setTheme: (theme: "light" | "dark") => void;
   setLastViewedAuctionId: (auctionId: string | null) => void;
+  setCreateAuctionOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -17,10 +19,12 @@ export const useUIStore = create<UIState>()(
       isSidebarOpen: false,
       theme: "dark",
       lastViewedAuctionId: null,
+      isCreateAuctionOpen: false,
       toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
       setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
       setTheme: (theme) => set({ theme }),
       setLastViewedAuctionId: (lastViewedAuctionId) => set({ lastViewedAuctionId }),
+      setCreateAuctionOpen: (isOpen) => set({ isCreateAuctionOpen: isOpen }),
     }),
     {
       name: "autopulse-ui-storage",

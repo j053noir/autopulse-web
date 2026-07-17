@@ -116,6 +116,20 @@ export const api = {
         throw new Error(errorData.message || "Error al cerrar sesión");
       }
     },
+
+    async getProfile(): Promise<User> {
+      const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al obtener perfil del usuario");
+      }
+
+      return response.json();
+    },
   },
 
   auctions: {
@@ -138,6 +152,7 @@ export const api = {
           : "Detalles no disponibles",
         basePrice: item.startingPrice ?? 0,
         currentBid: item.currentPrice ?? 0,
+        currency: item.currentPriceCurrency || item.startingPriceCurrency || "USD",
         endTime: item.endTime,
         imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
       }));

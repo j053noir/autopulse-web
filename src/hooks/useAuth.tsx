@@ -23,7 +23,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem("accessToken");
     if (savedUser && token) {
       try {
-        setUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        
+        // Fetch full profile (with permissions) asynchronously in the background
+        api.auth.getProfile()
+          .then((profile) => {
+            setUser(profile);
+            localStorage.setItem("user", JSON.stringify(profile));
+          })
+          .catch((err) => {
+            console.error("Error fetching user profile:", err);
+            if (err.message?.includes("401") || err.message?.includes("Unauthorized")) {
+              logout();
+            }
+          });
       } catch {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
@@ -38,8 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await api.auth.login(email, password, closeActiveSessions);
       localStorage.setItem("accessToken", data.auth.accessToken);
       localStorage.setItem("refreshToken", data.auth.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      setUser(data.user);
+      
+      try {
+        const profile = await api.auth.getProfile();
+        localStorage.setItem("user", JSON.stringify(profile));
+        setUser(profile);
+      } catch (profileErr) {
+        console.error("Failed to load user profile after login:", profileErr);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+      }
     } finally {
       setLoading(false);
     }

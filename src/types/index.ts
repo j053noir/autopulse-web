@@ -17,6 +17,7 @@ export interface Auction {
   description: string;
   basePrice: number;
   currentBid: number;
+  currency: string;
   endTime: string;
   imageUrl: string;
 }
@@ -45,6 +46,7 @@ export interface CreateAuctionCommand {
   mileage: number;
   auctioneerId?: string; // Seteado por claims en backend
   startingPrice: number;
+  currency: string;
   endTime: string;
   idempotencyKey: string;
 }
@@ -53,6 +55,7 @@ export interface CreateAuctionBidCommand {
   auctionId?: string; // Seteado desde la ruta en backend
   auctioneerId?: string; // Seteado por claims en backend
   amount: number;
+  currency: string;
   idempotencyKey: string;
 }
 

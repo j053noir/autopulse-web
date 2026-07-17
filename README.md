@@ -16,6 +16,8 @@
 * **Compound Components:** Implementation of the *Compound Components* design pattern (such as `<Card>` and `<Tabs>`) to avoid Prop Drilling and simplify UI layout.
 * **Authentication Handler:** Integrated `AuthProvider` and `useAuth` hook that allows persisting user sessions and closing active sessions from other browsers.
 * **Consolidated API Service:** `fetch` client configuration with automatic injection of authorization tokens (Bearer) in headers.
+* **Interactive Modals:** Custom animated `Modal` wrapper implementing responsive `BidModal` (with currency-lock and custom bid validation) and `CreateAuctionModal` (with restricted currency validation).
+* **CarsXE API Proxy & Caching:** Dynamically retrieves high-quality vehicle images using a local Next.js proxy route `/api/carsxe/images` to avoid browser CORS blocks and secure the API key. Combines TanStack React Query with a **1-month development cache** (via custom `staleTime` and `gcTime`) to optimize billing costs.
 
 ## 💻 Local Development
 
@@ -29,10 +31,14 @@ pnpm install
 
 ### 2. Configure Environment Variables
 
-Create a `.env.local` file in the root of the project to define the backend URL (optional, the API service defaults to `http://localhost:5000`):
+Create a `.env.local` file in the root of the project:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# CarsXE API Configuration
+CARSXE_API_URL=https://api.carsxe.com
+CARSXE_API_KEY=YOUR_CARSXE_API_KEY
 ```
 
 ### 3. Start the development server

@@ -8,29 +8,54 @@ import {
   TelemetryBenchmarkResult,
 } from "@/types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:5000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-const getAuthHeaders = (): Record<string, string> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+/**
+ * Cliente de red seguro que propaga credenciales (cookies HTTP-Only) en todas las llamadas.
+ * 
+ * NOTA EDUCATIVA: En Next.js App Router (RSC y Client Components), al interactuar con APIs
+ * externas o en diferentes puertos (ej. Frontend en :3000 y Backend .NET en :5000), es VITAL
+ * usar `credentials: "include"`. Esto le indica al navegador que adjunte y guarde las cookies
+ * de sesión en solicitudes Cross-Origin, previniendo que se pierda el estado de la sesión.
+ */
+const fetchWithCredentials = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const headers = new Headers(options.headers);
+  if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  const finalOptions: RequestInit = {
+    ...options,
+    headers,
+    credentials: "include", // REQUISITO CRÍTICO: Envío automático de cookies en peticiones Cross-Origin
   };
 
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+  // Propagación manual de cookies en Server Components (SSR/RSC)
+  if (typeof window === "undefined") {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const allCookies = cookieStore.toString();
+      if (allCookies) {
+        headers.set("Cookie", allCookies);
+      }
+    } catch (e) {
+      // Ignorar si no hay contexto de request activo (ej. durante build estático)
     }
   }
 
-  return headers;
+  return fetch(url, finalOptions);
 };
 
 export const api = {
   auth: {
-    async login(email: string, password: string, closeActiveSessions: boolean = false): Promise<{ user: User; auth: AuthDto }> {
-      const response = await fetch(`${BASE_URL}/api/auth/login`, {
+    /**
+     * Procesa la autenticación del usuario.
+     * La cookie HTTP-Only 'Set-Cookie' es gestionada de manera nativa por el navegador.
+     */
+    async login(email: string, password: string, closeActiveSessions: boolean = false): Promise<User> {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, closeActiveSessions }),
       });
 
@@ -39,45 +64,15 @@ export const api = {
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
 
-      const authData: AuthDto = await response.json();
-
-      // Decodificar el JWT AccessToken para extraer las claims del usuario
-      let user: User = {
-        id: "",
-        email: "",
-        userName: "",
-        permissions: [],
-      };
-
-      try {
-        const payloadBase64 = authData.accessToken.split(".")[1];
-        const decodedPayload = JSON.parse(
-          typeof window !== "undefined"
-            ? atob(payloadBase64)
-            : Buffer.from(payloadBase64, "base64").toString("utf-8")
-        );
-
-        user = {
-          id: decodedPayload.sub || "",
-          email: decodedPayload.email || "",
-          userName: decodedPayload.unique_name || "",
-          permissions: [], // Las autorizaciones dinámicas se manejan por sesión en backend/cache
-        };
-      } catch (err) {
-        console.error("Error decodificando token de sesión:", err);
-      }
-
-      return {
-        user,
-        auth: authData,
-      };
+      // El backend puede retornar información básica del usuario. Si no la hay, se resuelve vía getProfile.
+      const data = await response.json();
+      return data.user || data;
     },
 
     async register(username: string, email: string, password: string): Promise<{ id: string }> {
       const idempotencyKey = typeof window !== "undefined" ? window.crypto.randomUUID() : "server-register-key";
-      const response = await fetch(`${BASE_URL}/api/auth/register`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, idempotencyKey }),
       });
 
@@ -89,26 +84,9 @@ export const api = {
       return response.json();
     },
 
-    async refreshToken(accessToken: string, refreshToken: string): Promise<AuthDto> {
-      const response = await fetch(`${BASE_URL}/api/auth/refresh-token`, {
+    async logout(): Promise<void> {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auth/logout`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accessToken, refreshToken }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Error al refrescar token");
-      }
-
-      return response.json();
-    },
-
-    async logout(accessToken: string, refreshToken: string): Promise<void> {
-      const response = await fetch(`${BASE_URL}/api/auth/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accessToken, refreshToken }),
       });
 
       if (!response.ok) {
@@ -118,9 +96,8 @@ export const api = {
     },
 
     async getProfile(): Promise<User> {
-      const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auth/profile`, {
         method: "GET",
-        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -134,9 +111,8 @@ export const api = {
 
   auctions: {
     async getActive(): Promise<Auction[]> {
-      const response = await fetch(`${BASE_URL}/api/auctions/active`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/active`, {
         method: "GET",
-        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -159,9 +135,8 @@ export const api = {
     },
 
     async getById(id: string): Promise<Auction> {
-      const response = await fetch(`${BASE_URL}/api/auctions/${id}`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/${id}`, {
         method: "GET",
-        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -173,9 +148,8 @@ export const api = {
     },
 
     async getDashboard(id: string): Promise<AuctionDashboardDto> {
-      const response = await fetch(`${BASE_URL}/api/auctions/${id}/dashboard`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/${id}/dashboard`, {
         method: "GET",
-        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -187,9 +161,8 @@ export const api = {
     },
 
     async create(command: CreateAuctionCommand): Promise<{ id: string }> {
-      const response = await fetch(`${BASE_URL}/api/auctions`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(command),
       });
 
@@ -202,9 +175,8 @@ export const api = {
     },
 
     async placeBid(id: string, command: CreateAuctionBidCommand): Promise<{ id: string }> {
-      const response = await fetch(`${BASE_URL}/api/auctions/${id}/bids`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/${id}/bids`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(command),
       });
 
@@ -220,9 +192,8 @@ export const api = {
 
   telemetry: {
     async process(method: "span" | "naive", rawData: string): Promise<void> {
-      const response = await fetch(`${BASE_URL}/api/telemetry?method=${method}`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/telemetry?method=${method}`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(rawData),
       });
 
@@ -232,9 +203,8 @@ export const api = {
     },
 
     async benchmark(rawData: string): Promise<TelemetryBenchmarkResult> {
-      const response = await fetch(`${BASE_URL}/api/telemetry/benchmark`, {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/telemetry/benchmark`, {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(rawData),
       });
 

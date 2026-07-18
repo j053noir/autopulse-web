@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const cspConnectSrc = process.env.NEXT_PUBLIC_CSP_CONNECT_SRC || "http://localhost:5000 https://api.carsxe.com";
     const cspHeader = `
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -25,7 +27,7 @@ const nextConfig: NextConfig = {
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
-      connect-src 'self' http://localhost:5000 https://api.carsxe.com;
+      connect-src 'self' ${apiUrl} ${cspConnectSrc};
     `.replace(/\s{2,}/g, ' ').trim();
 
     return [

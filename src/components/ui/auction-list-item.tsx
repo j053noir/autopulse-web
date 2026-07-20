@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Button } from "./button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCarsXEImages } from "@/hooks/useCarsXEImages";
@@ -24,6 +26,8 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
   ({ id, title, currentBid, endTime, imageUrl, onBid, dict }) => {
     const formattedEndTime = new Date(endTime).toLocaleDateString();
     const { user } = useAuth();
+    const params = useParams();
+    const lang = (params?.lang as string) || "en";
     const canBid = user?.permissions?.includes("auctions:bid");
 
     // Parse the title which is formatted as "Year Make Model" (e.g. "2019 Jaguar F-Pace")
@@ -66,8 +70,8 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
           </div>
         </div>
 
-        <div className="flex items-center gap-6 justify-between sm:justify-end w-full sm:w-auto">
-          <div className="text-right">
+        <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
+          <div className="text-right mr-2">
             <span className="block text-[10px] text-brand-muted uppercase font-bold tracking-wider">
               {dict.lastBid}
             </span>
@@ -75,6 +79,12 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
               ${currentBid.toLocaleString()}
             </span>
           </div>
+
+          <Link href={`/${lang}/auctions/${id}`} className="hover:scale-105 transition-transform duration-200">
+            <Button size="sm" variant="outline">
+              {lang === "es" ? "Ver" : "View"}
+            </Button>
+          </Link>
 
           {canBid && (
             <Button

@@ -89,5 +89,23 @@
     "connectionError": "Error de conexión en tiempo real. Los datos podrían no estar actualizados.",
     "errorGeneric": "Ocurrió un error al enviar tu puja.",
     "numericWarning": "Por favor, introduce un valor numérico válido."
+  },
+  "auctionDetail": {
+    "notFound": "Subasta no encontrada",
+    "notFoundDesc": "No se pudo cargar la información de la subasta desde el backend.",
+    "backToAuctions": "Volver a Subastas",
+    "liveAuction": "Subasta Activa",
+    "technicalSpecs": "Especificaciones Técnicas",
+    "brand": "Marca",
+    "model": "Modelo",
+    "mileage": "Kilometraje",
+    "year": "Año",
+    "securityLabTitle": "Laboratorio de Mitigación XSS (OWASP A03:2021)",
+    "rawPayloadLabel": "[❌] Payload Malicioso de Entrada",
+    "sanitizedOutputLabel": "[🛡️] Resultado Sanitizado (SafeHtmlRenderer)",
+    "securityNoteLabel": "Nota de Seguridad",
+    "securityNoteDesc": "DOMPurify ha removido quirúrgicamente la etiqueta <script>, ha bloqueado la inyección de javascript en el href del enlace, y ha desarmado el evento onerror de la imagen. La UI renderiza el contenido enriquecido legítimo sin comprometer la seguridad del usuario final.",
+    "securityPortalTitle": "Portales Seguros AutoPulse",
+    "securityPortalDesc": "Esta página cuenta con protección de X-Frame-Options: DENY contra secuestros de click (Clickjacking) y CSP estricta perimetral para neutralizar la inyección de código de terceros."
   }
 }

@@ -89,5 +89,23 @@
     "connectionError": "Real-time connection error. Data might not be up to date.",
     "errorGeneric": "An error occurred while placing your bid.",
     "numericWarning": "Please enter a valid numeric value."
+  },
+  "auctionDetail": {
+    "notFound": "Auction not found",
+    "notFoundDesc": "Could not load the auction details from the backend.",
+    "backToAuctions": "Back to Auctions",
+    "liveAuction": "Live Auction",
+    "technicalSpecs": "Technical Specifications",
+    "brand": "Brand",
+    "model": "Model",
+    "mileage": "Mileage",
+    "year": "Year",
+    "securityLabTitle": "XSS Mitigation Lab (OWASP A03:2021)",
+    "rawPayloadLabel": "[❌] Raw Malicious Input",
+    "sanitizedOutputLabel": "[🛡️] Sanitized Output (SafeHtmlRenderer)",
+    "securityNoteLabel": "Security Note",
+    "securityNoteDesc": "DOMPurify has surgically removed the <script> tag, blocked the javascript scheme execution in the link href, and disarmed the image onerror payload. The UI displays the rich text layout safely.",
+    "securityPortalTitle": "AutoPulse Security Portal",
+    "securityPortalDesc": "This portal enforces strict X-Frame-Options: DENY to protect against Clickjacking attacks, and strict perimeter CSP to neutralize remote code injections."
   }
 }

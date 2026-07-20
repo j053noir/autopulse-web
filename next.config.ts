@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
   async headers() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     const cspConnectSrc = process.env.NEXT_PUBLIC_CSP_CONNECT_SRC || "http://localhost:5000 https://api.carsxe.com";
+    
+    // Generar dinámicamente las contrapartes WebSocket (ws:// y wss://) a partir de las URLs HTTP/HTTPS
+    const wsApiUrl = apiUrl.replace(/^http/, "ws");
+    const wsCspConnectSrc = cspConnectSrc.replace(/http/g, "ws");
+
     const cspHeader = `
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
@@ -27,7 +32,7 @@ const nextConfig: NextConfig = {
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
-      connect-src 'self' ${apiUrl} ${cspConnectSrc};
+      connect-src 'self' ${apiUrl} ${wsApiUrl} ${cspConnectSrc} ${wsCspConnectSrc};
     `.replace(/\s{2,}/g, ' ').trim();
 
     return [

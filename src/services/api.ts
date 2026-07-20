@@ -8,6 +8,10 @@ import {
   TelemetryBenchmarkResult,
 } from "@/types";
 
+if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 /**
@@ -145,7 +149,34 @@ export const api = {
         throw new Error(errorData.message || `Error al obtener la subasta con ID ${id}`);
       }
 
-      return response.json();
+      const item = await response.json();
+      
+      let lastBidderName = undefined;
+      if (item.bids && item.bids.length > 0) {
+        const sortedBids = [...item.bids].sort(
+          (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        lastBidderName = sortedBids[0]?.bidderName || undefined;
+      }
+
+      return {
+        id: item.id,
+        title: item.vehicle ? `${item.vehicle.year} ${item.vehicle.marquee} ${item.vehicle.model}` : "Vehículo",
+        description: item.vehicle 
+          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi` 
+          : "Detalles no disponibles",
+        basePrice: item.startingPrice ?? 0,
+        currentBid: item.currentPrice ?? 0,
+        currency: item.currentPriceCurrency || item.startingPriceCurrency || "USD",
+        endTime: item.endTime,
+        imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+        year: item.vehicle?.year,
+        mileage: item.vehicle?.mileage,
+        vin: item.vehicle?.vin,
+        marquee: item.vehicle?.marquee,
+        model: item.vehicle?.model,
+        lastBidderName,
+      };
     },
 
     async getDashboard(id: string): Promise<AuctionDashboardDto> {

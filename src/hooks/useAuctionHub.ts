@@ -31,9 +31,12 @@ export function useAuctionHub({
   useEffect(() => {
     if (!auctionId) return;
 
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const hubUrl = `${baseUrl}/hubs/auctions`;
+
     // Construir la conexión del Hub de SignalR
     const newConnection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5000/hubs/auctions", {
+      .withUrl(hubUrl, {
         withCredentials: true,
       })
       .withAutomaticReconnect({
@@ -48,11 +51,11 @@ export function useAuctionHub({
     setConnection(newConnection);
 
     // Registrar escuchadores de eventos
-    newConnection.on("BidPlaced", (newPrice: number, bidderName: string) => {
+    newConnection.on("OnBidPlaced", (auctionId: string, newPrice: number, bidderName: string) => {
       onBidPlacedRef.current(newPrice, bidderName);
     });
 
-    newConnection.on("AuctionEnded", (winnerName: string) => {
+    newConnection.on("OnAuctionEnded", (auctionId: string, winnerName: string) => {
       onAuctionEndedRef.current(winnerName);
     });
 

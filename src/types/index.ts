@@ -20,6 +20,12 @@ export interface Auction {
   currency: string;
   endTime: string;
   imageUrl: string;
+  year?: number;
+  mileage?: number;
+  vin?: string;
+  marquee?: string;
+  model?: string;
+  lastBidderName?: string;
 }
 
 export interface BidDto {

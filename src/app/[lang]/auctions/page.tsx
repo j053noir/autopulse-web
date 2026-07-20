@@ -8,7 +8,6 @@ import { useAuctionsQuery } from "@/hooks/useAuctionsQuery";
 import { useAuctionActions } from "@/hooks/useAuctionActions";
 import { VirtualizedAuctionList } from "@/components/ui/virtualized-auction-list";
 import { BidModal } from "@/components/ui/bid-modal";
-import { CreateAuctionModal } from "@/components/ui/create-auction-modal";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import en from "@/../dictionaries/en.json";
@@ -126,14 +125,6 @@ export default function AuctionsPage({
         auction={selectedBidAuction}
         onPlaceBid={placeBid}
         isSubmitting={isBidding}
-        dict={dict}
-      />
-
-      <CreateAuctionModal
-        isOpen={isCreateAuctionOpen}
-        onClose={() => setCreateAuctionOpen(false)}
-        onCreateAuction={createAuction}
-        isSubmitting={isCreating}
         dict={dict}
       />
     </div>

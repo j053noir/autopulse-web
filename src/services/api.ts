@@ -87,6 +87,7 @@ export const api = {
     async logout(): Promise<void> {
       const response = await fetchWithCredentials(`${BASE_URL}/api/auth/logout`, {
         method: "POST",
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {

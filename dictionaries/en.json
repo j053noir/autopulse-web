@@ -74,5 +74,20 @@
       "error": "Failed to create auction"
     },
     "close": "Close"
+  },
+  "liveAuction": {
+    "title": "Live Auction",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "currentPrice": "Current Price",
+    "lastBidder": "Last bidder",
+    "noOffers": "No offers",
+    "quickBid": "Bid",
+    "or": "Or",
+    "customBidMin": "Minimum",
+    "send": "Send",
+    "connectionError": "Real-time connection error. Data might not be up to date.",
+    "errorGeneric": "An error occurred while placing your bid.",
+    "numericWarning": "Please enter a valid numeric value."
   }
 }

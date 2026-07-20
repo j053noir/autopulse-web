@@ -74,5 +74,20 @@
       "error": "Error al crear la subasta"
     },
     "close": "Cerrar"
+  },
+  "liveAuction": {
+    "title": "Subasta en Vivo",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "currentPrice": "Precio Actual",
+    "lastBidder": "Último postor",
+    "noOffers": "Sin ofertas",
+    "quickBid": "Pujar",
+    "or": "O",
+    "customBidMin": "Mínimo",
+    "send": "Enviar",
+    "connectionError": "Error de conexión en tiempo real. Los datos podrían no estar actualizados.",
+    "errorGeneric": "Ocurrió un error al enviar tu puja.",
+    "numericWarning": "Por favor, introduce un valor numérico válido."
   }
 }

@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { SafeHtmlRenderer } from "@/components/ui/safe-html-renderer";
+import { LiveAuctionCard } from "@/components/auctions/live-auction-card";
 import en from "@/../dictionaries/en.json";
 import es from "@/../dictionaries/es.json";
 
@@ -168,33 +169,16 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
 
           </div>
 
-          {/* Columna Derecha: Panel de Oferta e Info de Subasta */}
+          {/* Columna Derecha: Tarjeta de Puja Activa */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-brand-surface border border-slate-800 rounded-2xl p-6 space-y-6">
-              <div>
-                <h1 className="text-2xl font-black text-white leading-tight mb-1">{mockCar.title}</h1>
-                <p className="text-xs text-brand-muted font-mono">{mockCar.year} &bull; {mockCar.color}</p>
-              </div>
-
-              <div className="bg-brand-dark/50 border border-slate-800/80 p-4 rounded-xl">
-                <span className="text-xs text-brand-muted uppercase block font-mono">{lang === "es" ? "Oferta Actual" : "Current Bid"}</span>
-                <span className="text-3xl font-black text-brand-accent font-mono">
-                  ${mockCar.currentBid.toLocaleString()} <span className="text-sm font-normal text-white">USD</span>
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center text-sm font-mono px-1">
-                <span className="text-brand-muted">{lang === "es" ? "Termina en:" : "Time Left:"}</span>
-                <span className="text-red-400 font-bold">{mockCar.endsIn}</span>
-              </div>
-
-              <button
-                disabled
-                className="w-full py-4 bg-slate-800 text-slate-500 font-black rounded-xl border border-slate-700 cursor-not-allowed hover:bg-slate-800 transition-colors uppercase tracking-wider text-sm"
-              >
-                {lang === "es" ? "Ofertas deshabilitadas en vista demostrativa" : "Bidding disabled in demo view"}
-              </button>
-            </div>
+            <LiveAuctionCard
+              auctionId={mockCar.id}
+              initialPrice={mockCar.currentBid}
+              initialBidderName={dict.liveAuction.noOffers || "Sin ofertas"}
+              currency="USD"
+              vehicleName={mockCar.title}
+              dict={dict}
+            />
 
             <div className="bg-brand-surface/40 border border-slate-800 rounded-2xl p-6 space-y-3">
               <span className="text-xs font-mono font-bold text-white uppercase block">🛡️ {lang === "es" ? "Portales Seguros AutoPulse" : "AutoPulse Security Portal"}</span>

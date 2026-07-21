@@ -12,9 +12,22 @@ export async function SlowAuctionGrid() {
       await new Promise((resolve) => setTimeout(resolve, 2500));
     }
 
+    const headers: Record<string, string> = {};
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      const allCookies = cookieStore.toString();
+      if (allCookies) {
+        headers["Cookie"] = allCookies;
+      }
+    } catch (e) {
+      // Ignorar durante build estático
+    }
+
     // Fetch directo al backend de AutoPulse sin caché para obtener data en tiempo real
     const response = await fetch("http://localhost:5000/api/auctions/active", {
       cache: "no-store",
+      headers,
     });
 
     if (!response.ok) {

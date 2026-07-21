@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useAuctionHub } from "@/hooks/useAuctionHub";
-import { api } from "@/services/api";
+import React, { useState } from "react";
+import { useAuctionQuery } from "@/hooks/useAuctionQuery";
+import { useAuctionRealTime } from "@/hooks/useAuctionRealTime";
+import { usePlaceBidMutation } from "@/hooks/usePlaceBidMutation";
+import { BidActionButton } from "@/components/auctions/bid-action-button";
 
 type CurrencyType = "USD" | "CAD" | "COP";
 
@@ -32,34 +34,19 @@ export function LiveAuctionCard({
   const tLive = dict?.liveAuction || {};
   const tAuctions = dict?.auctions || {};
 
-  const defaultBidderName = initialBidderName || tLive.noOffers || "Sin ofertas";
-
-  const [currentPrice, setCurrentPrice] = useState<number>(initialPrice);
-  const [lastBidder, setLastBidder] = useState<string>(defaultBidderName);
-  const [isFlashActive, setIsFlashActive] = useState<boolean>(false);
   const [customBid, setCustomBid] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const { isConnected, error: connectionError } = useAuctionHub({
-    auctionId,
-    onBidPlaced: (newPrice, bidderName) => {
-      setCurrentPrice(newPrice);
-      setLastBidder(bidderName);
-      setIsFlashActive(true);
-    },
-    onAuctionEnded: (winnerName) => {
-      setLastBidder(winnerName);
-      setSuccessMsg(`${dict?.home?.tabs?.gameRules || "Finalizada"} - Ganador: ${winnerName}`);
-    },
-  });
+  // Carga del estado desde la caché global de React Query (o HTTP si está vacío)
+  const { auction } = useAuctionQuery(auctionId);
 
-  useEffect(() => {
-    if (!isFlashActive) return;
-    const timer = setTimeout(() => setIsFlashActive(false), 800);
-    return () => clearTimeout(timer);
-  }, [isFlashActive]);
+  // Escucha activa de SignalR vinculada al socket y caché
+  const { isConnected, error: connectionError } = useAuctionRealTime({ auctionId });
+
+  // Mutación optimista para enviar ofertas con rollback
+  const { mutate: placeBid, isPending: isSubmitting } = usePlaceBidMutation();
+
+  const currentPrice = auction?.currentBid ?? initialPrice;
+  const lastBidder = auction?.lastBidderName ?? initialBidderName ?? (tLive.noOffers || "Sin ofertas");
 
   const config = CURRENCY_CONFIG[currency] || CURRENCY_CONFIG.USD;
 
@@ -71,52 +58,27 @@ export function LiveAuctionCard({
     }).format(value);
   };
 
-  const handlePlaceBid = async (amount: number) => {
+  const handlePlaceBid = (amount: number) => {
     if (amount <= currentPrice) {
       const validationError = tAuctions.errors?.higherPrice || "La puja debe ser mayor al precio actual";
-      setErrorMsg(`${validationError}: ${formatPrice(currentPrice)}`);
+      alert(`${tAuctions.errors?.prefix || "Error"}: ${validationError}: ${formatPrice(currentPrice)}`);
       return;
     }
 
-    setIsSubmitting(true);
-    setErrorMsg(null);
-    setSuccessMsg(null);
-
-    try {
-      const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID 
-        ? crypto.randomUUID() 
-        : Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-      await api.auctions.placeBid(auctionId, { 
-        amount, 
-        currency, 
-        idempotencyKey 
-      });
-      setCustomBid("");
-      setSuccessMsg(tAuctions.bidSuccess || "¡Puja enviada con éxito!");
-    } catch (err) {
-      console.error(err);
-      setErrorMsg(
-        err instanceof Error 
-          ? err.message 
-          : (tLive.errorGeneric || "Ocurrió un error al enviar tu puja.")
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    placeBid({
+      auctionId,
+      amount,
+      currency,
+    });
+    setCustomBid("");
   };
 
-  const handleQuickBid = () => {
-    const increment = config.increment;
-    const newBidAmount = currentPrice + increment;
-    handlePlaceBid(newBidAmount);
-  };
 
   const handleCustomBidSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const amount = parseFloat(customBid);
     if (isNaN(amount) || amount <= 0) {
-      setErrorMsg(tLive.numericWarning || "Por favor, introduce un valor numérico válido.");
+      alert(tLive.numericWarning || "Por favor, introduce un valor numérico válido.");
       return;
     }
     handlePlaceBid(amount);
@@ -144,13 +106,10 @@ export function LiveAuctionCard({
         </h2>
       </div>
 
-      {/* Visualización del precio */}
+      {/* Visualización del precio con animación por cambio de key (sin useEffects) */}
       <div
-        className={`my-6 rounded-xl p-5 text-center transition-all duration-500 ${
-          isFlashActive
-            ? "bg-emerald-950/80 border-2 border-emerald-500 scale-102 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-            : "bg-neutral-950 border border-neutral-800"
-        }`}
+        key={currentPrice}
+        className="my-6 rounded-xl p-5 text-center bg-neutral-950 border border-neutral-800 transition-all duration-500 animate-in fade-in zoom-in-95 duration-300"
       >
         <p className="text-sm font-medium text-neutral-400">
           {tLive.currentPrice || "Precio Actual"}
@@ -166,19 +125,9 @@ export function LiveAuctionCard({
         </div>
       </div>
 
-      {/* Mensajes de feedback */}
-      {errorMsg && (
-        <div className="mb-4 rounded-lg bg-rose-950/50 border border-rose-900/50 p-3 text-xs text-rose-300 text-center">
-          {errorMsg}
-        </div>
-      )}
-      {successMsg && (
-        <div className="mb-4 rounded-lg bg-emerald-950/50 border border-emerald-900/50 p-3 text-xs text-emerald-300 text-center">
-          {successMsg}
-        </div>
-      )}
+      {/* Mensajes de feedback de conexión */}
       {connectionError && (
-        <div className="mb-4 rounded-lg bg-amber-950/50 border border-amber-900/50 p-3 text-xs text-amber-300 text-center">
+        <div className="mb-4 rounded-lg bg-amber-950/50 border border-amber-900/50 p-3 text-xs text-amber-300 text-center animate-pulse">
           {tLive.connectionError || "Error de conexión en tiempo real."}
         </div>
       )}
@@ -186,16 +135,13 @@ export function LiveAuctionCard({
       {/* Acciones de Puja */}
       <div className="space-y-4">
         {/* Puja rápida */}
-        <button
-          type="button"
-          onClick={handleQuickBid}
-          disabled={isSubmitting || !isConnected}
-          className="w-full cursor-pointer rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-md hover:bg-emerald-500 focus:outline-hidden active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting 
-            ? (dict?.modals?.placeBid?.submitting || "Procesando...") 
-            : `${tLive.quickBid || "Pujar"} +${formatPrice(config.increment)}`}
-        </button>
+        <BidActionButton
+          auctionId={auctionId}
+          amount={currentPrice + config.increment}
+          currency={currency}
+          label={`${tLive.quickBid || "Pujar"} +${formatPrice(config.increment)}`}
+          disabled={!isConnected}
+        />
 
         {/* Separador */}
         <div className="relative flex py-2 items-center">

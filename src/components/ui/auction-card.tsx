@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SafeDateRenderer } from "@/components/ui/safe-date-renderer";
@@ -107,9 +108,11 @@ export function AuctionCard({ auction, theme, lang, onBidClick }: AuctionCardPro
           {lang === "es" ? "Termina: " : "Ends: "}
           <SafeDateRenderer dateString={auction.endTime} className="inline text-gray-500" />
         </span>
-        <Button size="sm" variant="primary" onClick={() => onBidClick?.(auction.id)}>
-          {lang === "es" ? "Ofertar Ahora" : "Bid Now"}
-        </Button>
+        <Link href={`/${lang}/auctions/${auction.id}`}>
+          <Button size="sm" variant="primary" onClick={() => onBidClick?.(auction.id)}>
+            {lang === "es" ? "Ofertar Ahora" : "Bid Now"}
+          </Button>
+        </Link>
       </Card.Footer>
     </Card>
   );

@@ -6,6 +6,7 @@ import {
   CreateAuctionCommand,
   CreateAuctionBidCommand,
   TelemetryBenchmarkResult,
+  UserBid,
 } from "@/types";
 
 if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
@@ -216,6 +217,18 @@ export const api = {
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.detail || errorData.title || errorData.message || `HTTP ${response.status}`;
         throw new Error(errorMessage);
+      }
+
+      return response.json();
+    },
+
+    async getMyBids(): Promise<UserBid[]> {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/bids/my`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener las ofertas del usuario");
       }
 
       return response.json();

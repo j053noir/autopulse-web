@@ -12,6 +12,11 @@
       "lastPurchasesDesc": "Accede al registro cronológico de tus ofertas anteriores y vehículos adjudicados.",
       "portalTerms": "Términos del Portal",
       "portalTermsDesc": "Las ofertas en AutoPulse son vinculantes. Lee con detenimiento las cláusulas de garantía."
+    },
+    "rules": {
+      "rule1": "Cada puja aumenta el precio mínimo establecido.",
+      "rule2": "Una vez realizada la oferta, esta no puede ser cancelada.",
+      "rule3": "El postor más alto al finalizar el cronómetro se adjudica la subasta."
     }
   },
   "auctions": {
@@ -107,5 +112,18 @@
     "securityNoteDesc": "DOMPurify ha removido quirúrgicamente la etiqueta <script>, ha bloqueado la inyección de javascript en el href del enlace, y ha desarmado el evento onerror de la imagen. La UI renderiza el contenido enriquecido legítimo sin comprometer la seguridad del usuario final.",
     "securityPortalTitle": "Portales Seguros AutoPulse",
     "securityPortalDesc": "Esta página cuenta con protección de X-Frame-Options: DENY contra secuestros de click (Clickjacking) y CSP estricta perimetral para neutralizar la inyección de código de terceros."
+  },
+  "userBids": {
+    "loginPrompt": "Inicia sesión para ver tus ofertas",
+    "loginRequiredDesc": "Debes acceder a tu cuenta para ver el registro de tus ofertas.",
+    "live": "En vivo",
+    "ended": "Finalizado",
+    "placedOn": "Realizada el:",
+    "yourBid": "Tu Oferta",
+    "outbid": "Superado",
+    "winning": "Ganando",
+    "viewDetails": "Ver Detalles",
+    "noBids": "Sin ofertas activas",
+    "noBidsDesc": "Aún no has realizado ninguna oferta. ¡Explora las subastas activas para comenzar!"
   }
 }

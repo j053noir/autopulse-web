@@ -84,3 +84,14 @@ export interface TelemetryBenchmarkResult {
     garbageReductionPercent: number;
   };
 }
+
+export interface UserBid {
+  bidId: string;
+  auctionId: string;
+  vehicleName: string;
+  bidAmount: number;
+  currency: string;
+  bidDate: string;
+  currentAuctionPrice: number;
+  isAuctionActive: boolean;
+}

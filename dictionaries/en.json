@@ -12,6 +12,11 @@
       "lastPurchasesDesc": "Access the chronological record of your previous bids and awarded vehicles.",
       "portalTerms": "Portal Terms",
       "portalTermsDesc": "Bids on AutoPulse are binding. Read the warranty clauses carefully."
+    },
+    "rules": {
+      "rule1": "Each bid increases the minimum price established.",
+      "rule2": "Once placed, bids cannot be cancelled.",
+      "rule3": "The highest bidder at end of time wins the auction."
     }
   },
   "auctions": {
@@ -107,5 +112,18 @@
     "securityNoteDesc": "DOMPurify has surgically removed the <script> tag, blocked the javascript scheme execution in the link href, and disarmed the image onerror payload. The UI displays the rich text layout safely.",
     "securityPortalTitle": "AutoPulse Security Portal",
     "securityPortalDesc": "This portal enforces strict X-Frame-Options: DENY to protect against Clickjacking attacks, and strict perimeter CSP to neutralize remote code injections."
+  },
+  "userBids": {
+    "loginPrompt": "Login to view your bids",
+    "loginRequiredDesc": "You must log in to your account to view the record of your bids.",
+    "live": "Live",
+    "ended": "Ended",
+    "placedOn": "Placed on:",
+    "yourBid": "Your Bid",
+    "outbid": "Outbid",
+    "winning": "Winning",
+    "viewDetails": "View Details",
+    "noBids": "No active bids",
+    "noBidsDesc": "You haven't placed any bids yet. Explore active auctions to get started!"
   }
 }

@@ -7,6 +7,7 @@ import {
   CreateAuctionBidCommand,
   TelemetryBenchmarkResult,
   UserBid,
+  PreSignedUrlResponseDto,
 } from "@/types";
 
 if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
@@ -129,8 +130,8 @@ export const api = {
       return data.map((item: any) => ({
         id: item.id,
         title: item.vehicle ? `${item.vehicle.year} ${item.vehicle.marquee} ${item.vehicle.model}` : "Vehículo",
-        description: item.vehicle 
-          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi` 
+        description: item.vehicle
+          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi`
           : "Detalles no disponibles",
         basePrice: item.startingPrice ?? 0,
         currentBid: item.currentPrice ?? 0,
@@ -151,7 +152,7 @@ export const api = {
       }
 
       const item = await response.json();
-      
+
       let lastBidderName = undefined;
       if (item.bids && item.bids.length > 0) {
         const sortedBids = [...item.bids].sort(
@@ -163,8 +164,8 @@ export const api = {
       return {
         id: item.id,
         title: item.vehicle ? `${item.vehicle.year} ${item.vehicle.marquee} ${item.vehicle.model}` : "Vehículo",
-        description: item.vehicle 
-          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi` 
+        description: item.vehicle
+          ? `VIN: ${item.vehicle.vin} • Kilometraje: ${item.vehicle.mileage?.toLocaleString() ?? 0} mi`
           : "Detalles no disponibles",
         basePrice: item.startingPrice ?? 0,
         currentBid: item.currentPrice ?? 0,
@@ -201,10 +202,53 @@ export const api = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+
+        // Propagate structured FluentValidation errors if available
+        if (response.status === 400 && errorData.errors) {
+          const customError = new Error("Validation Failed") as any;
+          customError.errors = errorData.errors;
+          throw customError;
+        }
+
         throw new Error(errorData.message || "Error al crear la subasta");
       }
 
       return response.json();
+    },
+
+    async getUploadUrl(fileName: string, contentType: string): Promise<PreSignedUrlResponseDto> {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auctions/upload-url`, {
+        method: "POST",
+        body: JSON.stringify({ fileName, contentType }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al generar URL de carga");
+      }
+
+      return response.json();
+    },
+
+    async uploadFileToStorage(uploadUrl: string, file: File): Promise<void> {
+      // En ambiente de desarrollo (development) simulamos el éxito de la subida sin hacer la petición real
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Dev Mode] Simulando subida de archivo a Azure Storage:", file.name);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return;
+      }
+
+      const response = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al subir archivo al Storage");
+      }
     },
 
     async placeBid(id: string, command: CreateAuctionBidCommand): Promise<{ id: string }> {

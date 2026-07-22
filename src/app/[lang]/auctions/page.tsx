@@ -2,6 +2,7 @@
 
 import React, { useCallback, use, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { useUIStore } from "@/hooks/useUIStore";
 import { useAuctionsQuery } from "@/hooks/useAuctionsQuery";
@@ -36,11 +37,9 @@ export default function AuctionsPage({
   const { lang } = use(params);
   const dict = dictionaries[lang as "en" | "es"] || dictionaries.en;
   const theme = useUIStore((state) => state.theme);
-  const isCreateAuctionOpen = useUIStore((state) => state.isCreateAuctionOpen);
-  const setCreateAuctionOpen = useUIStore((state) => state.setCreateAuctionOpen);
   
   const { auctions, isLoading, isError, refetch } = useAuctionsQuery();
-  const { placeBid, createAuction, isBidding, isCreating } = useAuctionActions();
+  const { placeBid, isBidding } = useAuctionActions();
   const { user } = useAuth();
 
   const [selectedBidAuction, setSelectedBidAuction] = useState<any | null>(null);
@@ -75,13 +74,14 @@ export default function AuctionsPage({
             </p>
           </div>
           {user?.permissions?.includes("auctions:create") && (
-            <Button
-              onClick={() => setCreateAuctionOpen(true)}
-              variant="primary"
-              className="sm:self-end"
-            >
-              {lang === "es" ? "Crear Subasta" : "Create Auction"}
-            </Button>
+            <Link href={`/${lang}/auctions/create`}>
+              <Button
+                variant="primary"
+                className="sm:self-end"
+              >
+                {lang === "es" ? "Crear Subasta" : "Create Auction"}
+              </Button>
+            </Link>
           )}
         </div>
 

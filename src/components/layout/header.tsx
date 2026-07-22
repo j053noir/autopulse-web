@@ -4,9 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { useUIStore } from "@/hooks/useUIStore";
-import { useAuctionActions } from "@/hooks/useAuctionActions";
-import { CreateAuctionModal } from "@/components/ui/create-auction-modal";
 import { Button } from "@/components/ui/button";
 import en from "@/../dictionaries/en.json";
 import es from "@/../dictionaries/es.json";
@@ -17,11 +14,6 @@ export function Header() {
   const { user, logout } = useAuth();
   const params = useParams();
   const lang = (params?.lang as string) || "en";
-  const dict = dictionaries[lang as "en" | "es"] || dictionaries.en;
-  
-  const isCreateAuctionOpen = useUIStore((state) => state.isCreateAuctionOpen);
-  const setCreateAuctionOpen = useUIStore((state) => state.setCreateAuctionOpen);
-  const { createAuction, isCreating } = useAuctionActions();
 
   return (
     <header className="w-full bg-brand-dark/90 backdrop-blur-md border-b border-gray-800/80 sticky top-0 z-50 transition-all">
@@ -42,12 +34,12 @@ export function Header() {
             {lang === "es" ? "Panel Virtual" : "Virtualized Panel"}
           </Link>
           {user?.permissions?.includes("auctions:create") && (
-            <button
-              onClick={() => setCreateAuctionOpen(true)}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors cursor-pointer bg-transparent border-none"
+            <Link
+              href={`/${lang}/auctions/create`}
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
               {lang === "es" ? "Crear Subasta" : "Create Auction"}
-            </button>
+            </Link>
           )}
           <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
             {lang === "es" ? "Historial" : "History"}
@@ -79,14 +71,6 @@ export function Header() {
           )}
         </div>
       </div>
-
-      <CreateAuctionModal
-        isOpen={isCreateAuctionOpen}
-        onClose={() => setCreateAuctionOpen(false)}
-        onCreateAuction={createAuction}
-        isSubmitting={isCreating}
-        dict={dict}
-      />
     </header>
   );
 }

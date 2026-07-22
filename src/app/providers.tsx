@@ -5,8 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useGlobalSignalR } from "@/hooks/useGlobalSignalR";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Suscribirse de manera global al evento OnAuctionCreated de SignalR
+  useGlobalSignalR();
+
   const [queryClient] = useState(
     () =>
       new QueryClient({

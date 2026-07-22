@@ -49,12 +49,23 @@ export interface CreateAuctionCommand {
   marquee: string;
   model: string;
   year: number;
+  margin?: number;
   mileage: number;
+  title?: string;
+  basePrice?: number;
+  minimumBidIncrement?: number;
+  category?: string;
+  documentStorageKey?: string;
   auctioneerId?: string; // Seteado por claims en backend
   startingPrice: number;
   currency: string;
   endTime: string;
   idempotencyKey: string;
+}
+
+export interface PreSignedUrlResponseDto {
+  uploadUrl: string;
+  storageKey: string;
 }
 
 export interface CreateAuctionBidCommand {

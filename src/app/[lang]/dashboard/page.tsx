@@ -19,14 +19,14 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
   const dict = dictionaries[lang as "en" | "es"] || dictionaries.en;
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-brand-dark dark:text-white flex flex-col transition-colors duration-300">
       {/* Cabecera de Navegación */}
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Encabezado del Dashboard */}
         <div className="mb-10">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
             Panel de <span className="text-brand-accent">Control</span>
           </h1>
           <p className="text-sm sm:text-base text-brand-muted">
@@ -38,11 +38,11 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
         {/* Panel Estático de Analíticas y Métricas (Carga Inmediata - 0ms) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <Card className="p-5 border-gray-800/80 bg-brand-surface/40">
+          <Card className="p-5 border-slate-200 dark:border-gray-800/80 bg-white dark:bg-brand-surface/40 shadow-sm dark:shadow-none">
             <span className="block text-xs text-brand-muted uppercase font-bold tracking-wider mb-1">
               {dict.analytics?.bidActivity || "Actividad de Pujas"}
             </span>
-            <span className="text-2xl font-black text-white">
+            <span className="text-2xl font-black text-slate-800 dark:text-white">
               {dict.analytics?.activityLevel || "Alta"}
             </span>
             <span className="block text-[10px] text-green-500 font-semibold mt-1">
@@ -50,7 +50,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
             </span>
           </Card>
 
-          <Card className="p-5 border-gray-800/80 bg-brand-surface/40">
+          <Card className="p-5 border-slate-200 dark:border-gray-800/80 bg-white dark:bg-brand-surface/40 shadow-sm dark:shadow-none">
             <span className="block text-xs text-brand-muted uppercase font-bold tracking-wider mb-1">
               {dict.analytics?.averageBid || "Puja Promedio"}
             </span>
@@ -62,11 +62,11 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
             </span>
           </Card>
 
-          <Card className="p-5 border-gray-800/80 bg-brand-surface/40">
+          <Card className="p-5 border-slate-200 dark:border-gray-800/80 bg-white dark:bg-brand-surface/40 shadow-sm dark:shadow-none">
             <span className="block text-xs text-brand-muted uppercase font-bold tracking-wider mb-1">
               {dict.analytics?.participants || "Postores Activos"}
             </span>
-            <span className="text-2xl font-black text-white">
+            <span className="text-2xl font-black text-slate-800 dark:text-white">
               {dict.analytics?.activeCount || "84 en vivo"}
             </span>
             <span className="block text-[10px] text-green-500 font-semibold mt-1">
@@ -74,12 +74,12 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
             </span>
           </Card>
 
-          <Card className="p-5 border-gray-800/80 bg-brand-surface/40">
+          <Card className="p-5 border-slate-200 dark:border-gray-800/80 bg-white dark:bg-brand-surface/40 shadow-sm dark:shadow-none">
             <span className="block text-xs text-brand-muted uppercase font-bold tracking-wider mb-1">
               Latencia de Carga UI
             </span>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-white">~0ms</span>
+              <span className="text-2xl font-black text-slate-800 dark:text-white">~0ms</span>
               <span className="text-xs text-brand-muted">(Percibido)</span>
             </div>
             <span className="block text-[10px] text-brand-accent font-semibold mt-1 animate-pulse">
@@ -92,7 +92,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
                 {lang === "es" ? "Subastas Activas" : "Active Auctions"}
               </h2>
               <p className="text-xs sm:text-sm text-brand-muted">

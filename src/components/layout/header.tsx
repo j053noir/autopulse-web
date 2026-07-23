@@ -16,32 +16,32 @@ export function Header() {
   const lang = (params?.lang as string) || "en";
 
   return (
-    <header className="w-full bg-brand-dark/90 backdrop-blur-md border-b border-gray-800/80 sticky top-0 z-50 transition-all">
+    <header className="w-full bg-white/90 dark:bg-brand-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-gray-800/80 sticky top-0 z-50 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Branding */}
         <Link href={`/${lang}`} className="flex items-center gap-2 group">
-          <span className="text-2xl font-black tracking-wider text-white">
+          <span className="text-2xl font-black tracking-wider text-slate-900 dark:text-white">
             AUTO<span className="text-brand-accent transition-colors group-hover:text-red-500">PULSE</span>
           </span>
         </Link>
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+          <Link href={`/${lang}`} className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white transition-colors">
             {lang === "es" ? "Inicio" : "Home"}
           </Link>
-          <Link href={`/${lang}/auctions`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+          <Link href={`/${lang}/auctions`} className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white transition-colors">
             {lang === "es" ? "Panel Virtual" : "Virtualized Panel"}
           </Link>
           {user?.permissions?.includes("auctions:create") && (
             <Link
               href={`/${lang}/auctions/create`}
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white transition-colors"
             >
               {lang === "es" ? "Crear Subasta" : "Create Auction"}
             </Link>
           )}
-          <Link href={`/${lang}`} className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+          <Link href={`/${lang}`} className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white transition-colors">
             {lang === "es" ? "Historial" : "History"}
           </Link>
         </nav>
@@ -54,7 +54,7 @@ export function Header() {
                 <div className="h-8 w-8 rounded-full bg-brand-accent flex items-center justify-center font-bold text-sm text-white select-none">
                   {user.userName.charAt(0).toUpperCase()}
                 </div>
-                <span className="hidden sm:inline text-sm font-medium text-gray-200">
+                <span className="hidden sm:inline text-sm font-medium text-slate-700 dark:text-gray-200">
                   {user.userName}
                 </span>
               </div>

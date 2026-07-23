@@ -5,6 +5,8 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { Auction } from "@/types";
 import { AuctionListItem } from "./auction-list-item";
 
+import { useUIStore } from "@/hooks/useUIStore";
+
 interface VirtualizedAuctionListProps {
   auctions: Auction[];
   onBid: (id: string) => void;
@@ -16,6 +18,7 @@ export const VirtualizedAuctionList: React.FC<VirtualizedAuctionListProps> = ({
   onBid,
   dict,
 }) => {
+  const theme = useUIStore((state) => state.theme);
   const parentRef = useRef<HTMLDivElement>(null);
 
   // TanStack Virtualizer configuration
@@ -29,7 +32,11 @@ export const VirtualizedAuctionList: React.FC<VirtualizedAuctionListProps> = ({
   return (
     <div
       ref={parentRef}
-      className="w-full h-[600px] overflow-auto border border-slate-800 rounded-xl bg-brand-dark/50 p-2 scrollbar-thin scrollbar-thumb-slate-800"
+      className={`w-full h-[600px] overflow-auto border rounded-xl p-2 scrollbar-thin ${
+        theme === "dark"
+          ? "border-slate-800 bg-brand-dark/50 scrollbar-thumb-slate-800"
+          : "border-slate-200 bg-slate-100/50 scrollbar-thumb-slate-300 text-slate-800"
+      }`}
     >
       <div
         className="w-full relative"

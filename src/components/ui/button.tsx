@@ -1,4 +1,5 @@
 import React, { ButtonHTMLAttributes } from "react";
+import { useUIStore } from "@/hooks/useUIStore";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline";
@@ -15,12 +16,17 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
+  const theme = useUIStore((state) => state.theme);
   const baseStyles = "inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
   const variants = {
     primary: "bg-brand-accent hover:bg-red-600 text-white shadow-lg shadow-brand-accent/20",
-    secondary: "bg-brand-surface hover:bg-slate-700 text-white border border-gray-700",
-    outline: "bg-transparent hover:bg-white/5 text-white border border-gray-600",
+    secondary: theme === "dark"
+      ? "bg-brand-surface hover:bg-slate-700 text-white border border-gray-700"
+      : "bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300",
+    outline: theme === "dark"
+      ? "bg-transparent hover:bg-white/5 text-white border border-gray-600"
+      : "bg-transparent hover:bg-black/5 text-slate-800 border border-slate-300",
   };
 
   const sizes = {

@@ -66,7 +66,7 @@ export default function AuctionsPage({
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-white mb-2">
+            <h1 className={`text-3xl font-black tracking-tight mb-2 ${theme === "dark" ? "text-white" : "text-slate-900"}`}>
               {dict.virtualPanel.title}
             </h1>
             <p className="text-sm text-brand-muted">
@@ -89,14 +89,18 @@ export default function AuctionsPage({
         <AuctionAnalytics />
 
         {isLoading ? (
-          <div className="h-[400px] w-full bg-brand-surface/50 border border-slate-800 rounded-xl flex items-center justify-center animate-pulse">
+          <div className={`h-[400px] w-full border rounded-xl flex items-center justify-center animate-pulse ${
+            theme === "dark" ? "bg-brand-surface/50 border-slate-800" : "bg-white border-slate-200"
+          }`}>
             <span className="text-brand-muted text-sm">
               {dict.virtualPanel.loading}
             </span>
           </div>
         ) : isError ? (
-          <div className="p-8 text-center bg-brand-surface border border-slate-800 rounded-xl">
-            <h3 className="text-lg font-bold text-white mb-2">
+          <div className={`p-8 text-center border rounded-xl ${
+            theme === "dark" ? "bg-brand-surface border-slate-800 text-white" : "bg-white border-slate-200 text-slate-900"
+          }`}>
+            <h3 className="text-lg font-bold mb-2">
               {dict.virtualPanel.error}
             </h3>
             <button

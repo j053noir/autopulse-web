@@ -20,7 +20,7 @@ export default async function CreateAuctionPage({ params }: CreateAuctionPagePro
   };
 
   return (
-    <main className="min-h-screen bg-brand-dark text-white py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-50 dark:bg-brand-dark text-slate-900 dark:text-white py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <Link
@@ -29,7 +29,7 @@ export default async function CreateAuctionPage({ params }: CreateAuctionPagePro
           >
             ← {t.back}
           </Link>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
             {t.title}
           </h1>
           <p className="mt-2 text-sm text-brand-muted">
@@ -37,7 +37,7 @@ export default async function CreateAuctionPage({ params }: CreateAuctionPagePro
           </p>
         </div>
 
-        <div className="bg-brand-surface border border-slate-800 rounded-xl p-6 sm:p-10 shadow-2xl">
+        <div className="bg-white dark:bg-brand-surface border border-slate-200 dark:border-slate-800 rounded-xl p-6 sm:p-10 shadow-2xl dark:shadow-none">
           <CreateAuctionForm dict={dict} />
         </div>
       </div>

@@ -7,15 +7,17 @@ import { Button } from "@/components/ui/button";
 import { SafeDateRenderer } from "@/components/ui/safe-date-renderer";
 import { Auction } from "@/types";
 import { useCarsXEImages } from "@/hooks/useCarsXEImages";
+import { useUIStore } from "@/hooks/useUIStore";
 
 interface AuctionCardProps {
   auction: Auction;
-  theme: "light" | "dark";
+  theme?: "light" | "dark";
   lang: string;
   onBidClick?: (id: string) => void;
 }
 
-export function AuctionCard({ auction, theme, lang, onBidClick }: AuctionCardProps) {
+export function AuctionCard({ auction, theme: propTheme, lang, onBidClick }: AuctionCardProps) {
+  const theme = useUIStore((state) => state.theme);
   // Parse the title which is formatted as "Year Make Model" (e.g. "2019 Jaguar F-Pace")
   const titleParts = auction.title.split(" ");
   const hasYear = titleParts.length > 0 && /^\d{4}$/.test(titleParts[0]);

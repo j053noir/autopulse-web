@@ -1,15 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useGlobalSignalR } from "@/hooks/useGlobalSignalR";
+import { useUIStore } from "@/hooks/useUIStore";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Suscribirse de manera global al evento OnAuctionCreated de SignalR
   useGlobalSignalR();
+
+  const theme = useUIStore((state) => state.theme);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.colorScheme = "dark";
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.colorScheme = "light";
+    }
+  }, [theme]);
 
   const [queryClient] = useState(
     () =>

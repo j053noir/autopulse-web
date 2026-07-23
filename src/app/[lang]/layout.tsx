@@ -33,7 +33,7 @@ export default async function RootLayout({
       lang={lang || "en"}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-brand-dark text-white">
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-brand-dark dark:text-white transition-colors duration-300">
         <Providers>
           <AuthProvider>
             {children}

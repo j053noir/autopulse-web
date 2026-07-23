@@ -34,8 +34,12 @@ export default function HomePage({
 
   // TanStack Query
   const { auctions, isLoading, isError, refetch } = useAuctionsQuery();
-  const { bids, isLoading: isBidsLoading } = useMyBidsQuery();
+  const { bids, isLoading: isBidsLoading, isError: isBidsError, error: bidsError } = useMyBidsQuery();
   const { isAuthenticated } = useAuth();
+
+  if (isBidsError) {
+    console.error("Error loading user bids:", bidsError);
+  }
 
   return (
     <div
@@ -214,6 +218,21 @@ export default function HomePage({
                   </div>
                 ))}
               </div>
+            ) : isBidsError ? (
+              // Error al cargar ofertas
+              <Card className={`max-w-md mx-auto text-center p-8 border ${
+                theme === "dark" ? "border-gray-800 bg-brand-surface text-white" : "border-slate-200 bg-white text-slate-900"
+              }`}>
+                <div className="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl text-red-500">⚠️</span>
+                </div>
+                <h3 className="text-lg font-bold mb-2">
+                  {lang === "es" ? "Error al cargar tus ofertas" : "Error loading your bids"}
+                </h3>
+                <p className={`text-sm mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                  {bidsError?.message || (lang === "es" ? "Hubo un problema al recuperar el listado de ofertas." : "There was a problem retrieving the bids list.")}
+                </p>
+              </Card>
             ) : bids.length === 0 ? (
               // Sin ofertas
               <Card className={`max-w-md mx-auto text-center p-8 border ${

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "./button";
 import { useAuth } from "@/hooks/useAuth";
+import { useUIStore } from "@/hooks/useUIStore";
 import { useCarsXEImages } from "@/hooks/useCarsXEImages";
 
 export interface AuctionListItemProps {
@@ -24,6 +25,7 @@ export interface AuctionListItemProps {
 // Memoized Auction Row component to avoid re-renders during virtualization/scrolls
 export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
   ({ id, title, currentBid, endTime, imageUrl, onBid, dict }) => {
+    const theme = useUIStore((state) => state.theme);
     const formattedEndTime = new Date(endTime).toLocaleDateString();
     const { user } = useAuth();
     const params = useParams();
@@ -52,7 +54,11 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
     const displayImageUrl = carsxeImage || imageUrl;
 
     return (
-      <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-brand-surface border border-slate-800 rounded-lg hover:border-brand-accent/50 transition-all duration-300 gap-4 w-full h-[120px] box-border">
+      <div className={`flex flex-col sm:flex-row items-center justify-between p-4 border rounded-lg transition-all duration-300 gap-4 w-full h-[120px] box-border ${
+        theme === "dark"
+          ? "bg-brand-surface border-slate-800 hover:border-brand-accent/50 text-white"
+          : "bg-white border-slate-200 hover:border-brand-accent/50 text-slate-800 shadow-sm"
+      }`}>
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <div className="h-16 w-24 rounded overflow-hidden bg-slate-900 flex-shrink-0 flex items-center justify-center relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -63,7 +69,7 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
             />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold text-white truncate">{title}</h3>
+            <h3 className={`text-base font-bold truncate ${theme === "dark" ? "text-white" : "text-slate-900"}`}>{title}</h3>
             <p className="text-xs text-brand-muted mt-1">
               {dict.ends}: {formattedEndTime}
             </p>
@@ -72,7 +78,7 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = React.memo(
 
         <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
           <div className="text-right mr-2">
-            <span className="block text-[10px] text-brand-muted uppercase font-bold tracking-wider">
+            <span className={`block text-[10px] uppercase font-bold tracking-wider ${theme === "dark" ? "text-brand-muted" : "text-slate-500"}`}>
               {dict.lastBid}
             </span>
             <span className="text-brand-accent font-extrabold text-lg">

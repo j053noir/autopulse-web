@@ -162,14 +162,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
       )}
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
           {t.title}
         </label>
         <input
           type="text"
           {...register("title")}
-          className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-            errors.title ? "border-red-500" : "border-slate-800"
+          className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+            errors.title ? "border-red-500" : "border-slate-300 dark:border-slate-800"
           }`}
           placeholder={t.titlePlaceholder}
         />
@@ -180,7 +180,7 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.vin}
           </label>
           <input
@@ -190,8 +190,8 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
               e.target.value = e.target.value.toUpperCase();
               register("vin").onChange(e);
             }}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-              errors.vin ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+              errors.vin ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
             placeholder={t.vinPlaceholder}
           />
@@ -201,12 +201,12 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.category}
           </label>
           <select
             {...register("category")}
-            className="w-full rounded-lg border border-slate-800 bg-brand-dark p-3 text-sm text-white focus:outline-none focus:border-brand-accent cursor-pointer"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-brand-accent cursor-pointer"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -222,14 +222,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.marquee}
           </label>
           <input
             type="text"
             {...register("marquee")}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-              errors.marquee ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+              errors.marquee ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
             placeholder={t.marqueePlaceholder}
           />
@@ -239,14 +239,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.model}
           </label>
           <input
             type="text"
             {...register("model")}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-              errors.model ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+              errors.model ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
             placeholder={t.modelPlaceholder}
           />
@@ -258,14 +258,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.year}
           </label>
           <input
             type="number"
             {...register("year", { valueAsNumber: true })}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white focus:outline-none focus:border-brand-accent ${
-              errors.year ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-brand-accent ${
+              errors.year ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
           />
           {errors.year && (
@@ -274,14 +274,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.mileage}
           </label>
           <input
             type="number"
             {...register("mileage", { valueAsNumber: true })}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white focus:outline-none focus:border-brand-accent ${
-              errors.mileage ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-brand-accent ${
+              errors.mileage ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
           />
           {errors.mileage && (
@@ -292,15 +292,15 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.basePrice}
           </label>
           <input
             type="number"
             step="any"
             {...register("basePrice", { valueAsNumber: true })}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-              errors.basePrice ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+              errors.basePrice ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
           />
           {errors.basePrice && (
@@ -309,14 +309,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.minimumBidIncrement}
           </label>
           <input
             type="number"
             {...register("minimumBidIncrement", { valueAsNumber: true })}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
-              errors.minimumBidIncrement ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-600 focus:outline-none focus:border-brand-accent ${
+              errors.minimumBidIncrement ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
           />
           {errors.minimumBidIncrement && (
@@ -327,12 +327,12 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.currency}
           </label>
           <select
             {...register("currency")}
-            className="w-full rounded-lg border border-slate-800 bg-brand-dark p-3 text-sm text-white focus:outline-none focus:border-brand-accent cursor-pointer"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-brand-accent cursor-pointer"
           >
             {CURRENCIES.map((cur) => (
               <option key={cur} value={cur}>
@@ -346,14 +346,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
             {t.endTime}
           </label>
           <input
             type="datetime-local"
             {...register("endTime")}
-            className={`w-full rounded-lg border bg-brand-dark p-3 text-sm text-white focus:outline-none focus:border-brand-accent cursor-pointer ${
-              errors.endTime ? "border-red-500" : "border-slate-800"
+            className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-3 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-brand-accent cursor-pointer ${
+              errors.endTime ? "border-red-500" : "border-slate-300 dark:border-slate-800"
             }`}
           />
           {errors.endTime && (
@@ -363,14 +363,14 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted mb-2">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-brand-muted mb-2">
           {t.document}
         </label>
         <input
           type="file"
           onChange={handleFileChange}
-          className={`w-full rounded-lg border bg-brand-dark p-2 text-sm text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-brand-surface file:text-white file:cursor-pointer ${
-            errors.documentStorageKey ? "border-red-500" : "border-slate-800"
+          className={`w-full rounded-lg border bg-slate-100 dark:bg-brand-dark p-2 text-sm text-slate-800 dark:text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-brand-surface file:text-slate-800 dark:file:text-white file:cursor-pointer ${
+            errors.documentStorageKey ? "border-red-500" : "border-slate-300 dark:border-slate-800"
           }`}
           accept=".pdf,image/png,image/jpeg,image/jpg"
         />
@@ -385,7 +385,7 @@ export function CreateAuctionForm({ onSuccess, dict }: CreateAuctionFormProps) {
         )}
       </div>
 
-      <div className="pt-6 border-t border-slate-800 flex justify-end">
+      <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
         <Button
           type="submit"
           variant="primary"

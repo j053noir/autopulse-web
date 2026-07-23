@@ -95,8 +95,10 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
     ? (auction.currency as CurrencyType)
     : "USD";
 
+  const isFinished = auction.isActive === false || new Date() >= new Date(auction.endTime);
+
   return (
-    <div className="min-h-screen flex flex-col bg-brand-dark text-white selection:bg-brand-accent selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-brand-dark dark:text-white selection:bg-brand-accent selection:text-white transition-colors duration-300">
       <Header />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -104,7 +106,7 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
         <div className="mb-6">
           <Link
             href={`/${lang}/auctions`}
-            className="text-xs text-brand-muted hover:text-white transition-colors duration-200 uppercase tracking-wider font-mono"
+            className="text-xs text-brand-muted hover:text-slate-900 dark:hover:text-white transition-colors duration-200 uppercase tracking-wider font-mono"
           >
             &larr; {tDetail.backToAuctions || "Volver a Subastas"}
           </Link>
@@ -115,21 +117,23 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
           
           {/* Columna Izquierda: Imágenes y Descripción Sanitizada */}
           <div className="lg:col-span-8 space-y-8">
-            <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-800 bg-brand-surface">
+            <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={auction.imageUrl}
                 alt={auction.title}
                 className="object-cover w-full h-full hover:scale-105 transition-transform duration-700 ease-out"
               />
-              <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider animate-pulse">
-                {tDetail.liveAuction || "Subasta Activa"}
+              <div className={`absolute top-4 left-4 text-white text-xs font-mono font-bold px-3 py-1.5 rounded-full uppercase tracking-wider ${isFinished ? "bg-neutral-700" : "bg-red-600 animate-pulse"}`}>
+                {isFinished 
+                  ? (dict.userBids?.ended || "Finalizado") 
+                  : (tDetail.liveAuction || "Subasta Activa")}
               </div>
             </div>
 
             {/* Ficha de Especificaciones Técnicas */}
-            <div className="bg-brand-surface border border-slate-800/80 rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4 uppercase tracking-wider font-mono border-b border-slate-800 pb-2">
+            <div className="bg-white dark:bg-brand-surface border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider font-mono border-b border-slate-200 dark:border-slate-800 pb-2">
                 {tDetail.technicalSpecs || "Especificaciones Técnicas"}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
@@ -167,13 +171,46 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
                   <span className="text-xs text-brand-muted uppercase block font-mono">ID</span>
                   <span className="text-sm font-mono text-brand-accent break-all">{auction.id}</span>
                 </div>
+                <div>
+                  <span className="text-xs text-brand-muted uppercase block font-mono">
+                    {lang === "es" ? "Categoría" : "Category"}
+                  </span>
+                  <span className="text-sm font-semibold capitalize">{auction.category || "N/A"}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-brand-muted uppercase block font-mono">
+                    {lang === "es" ? "Incremento Mínimo" : "Min Increment"}
+                  </span>
+                  <span className="text-sm font-semibold text-emerald-400">
+                    {auction.minimumBidIncrement 
+                      ? new Intl.NumberFormat(lang === "es" ? "es-CO" : "en-US", { style: "currency", currency: auction.currency, minimumFractionDigits: 0 }).format(auction.minimumBidIncrement) 
+                      : "N/A"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs text-brand-muted uppercase block font-mono">
+                    {lang === "es" ? "Documentación" : "Documentation"}
+                  </span>
+                  {auction.documentStorageKey ? (
+                    <a
+                      href={`/api/documents/${auction.documentStorageKey}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-brand-accent hover:underline flex items-center gap-1 mt-0.5"
+                    >
+                      📄 {lang === "es" ? "Ver Documento" : "View Document"}
+                    </a>
+                  ) : (
+                    <span className="text-sm font-semibold text-neutral-500">N/A</span>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Panel de Sanitización Demostrativo (Laboratorio de Seguridad) */}
             {showSecurityLab && (
-              <div className="bg-slate-950/80 border-2 border-dashed border-red-900/60 rounded-2xl p-6 space-y-6">
-                <div className="flex items-center gap-3 border-b border-slate-900 pb-3">
+              <div className="bg-slate-50 dark:bg-slate-950/80 border-2 border-dashed border-red-200 dark:border-red-900/60 rounded-2xl p-6 space-y-6 text-slate-800 dark:text-white">
+                <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-900 pb-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
                   <h3 className="text-base font-black text-red-500 tracking-wider uppercase font-mono">
                     {tDetail.securityLabTitle || "Laboratorio de Mitigación XSS (OWASP A03:2021)"}
@@ -196,13 +233,13 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
                     <span className="text-xs font-mono font-bold text-emerald-400 block uppercase">
                       {tDetail.sanitizedOutputLabel || "[🛡️] Resultado Sanitizado (SafeHtmlRenderer)"}
                     </span>
-                    <div className="p-4 bg-brand-surface border border-slate-800 rounded-xl text-sm leading-relaxed h-60 overflow-y-auto">
+                    <div className="p-4 bg-white dark:bg-brand-surface border border-slate-200 dark:border-slate-800 rounded-xl text-sm leading-relaxed h-60 overflow-y-auto">
                       <SafeHtmlRenderer htmlContent={simulatedMaliciousPayload} className="prose prose-invert prose-emerald max-w-none" />
                     </div>
                   </div>
                 </div>
 
-                <div className="text-xs bg-slate-900/50 p-3 rounded-lg border border-slate-800 text-brand-muted">
+                <div className="text-xs bg-slate-100 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-brand-muted">
                   <strong>{tDetail.securityNoteLabel || "Nota de Seguridad"}:</strong>{" "}
                   {tDetail.securityNoteDesc || "DOMPurify ha removido quirúrgicamente la etiqueta <script>, ha bloqueado la inyección de javascript en el href del enlace, y ha desarmado el evento onerror de la imagen."}
                 </div>
@@ -218,12 +255,12 @@ export default async function AuctionDetailPage({ params }: AuctionDetailPagePro
               initialPrice={auction.currentBid || auction.basePrice}
               initialBidderName={auction.lastBidderName || dict.liveAuction.noOffers || "Sin ofertas"}
               currency={currency}
-              vehicleName={auction.title}
+              vehicleName={auction.vehicleTitle || auction.title}
               dict={dict}
             />
 
-            <div className="bg-brand-surface/40 border border-slate-800 rounded-2xl p-6 space-y-3">
-              <span className="text-xs font-mono font-bold text-white uppercase block">
+            <div className="bg-white dark:bg-brand-surface/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+              <span className="text-xs font-mono font-bold text-slate-800 dark:text-white uppercase block">
                 🛡️ {tDetail.securityPortalTitle || "Portales Seguros AutoPulse"}
               </span>
               <p className="text-xs text-brand-muted leading-relaxed">

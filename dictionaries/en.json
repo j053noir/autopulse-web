@@ -181,5 +181,9 @@
     "yearMax": "Year is not valid.",
     "mileageType": "Mileage must be a number.",
     "mileageMin": "Mileage cannot be negative."
+  },
+  "auth": {
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "establishingConnection": "Establishing secure authentication channel..."
   }
 }

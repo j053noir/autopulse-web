@@ -181,5 +181,9 @@
     "yearMax": "El año no es válido.",
     "mileageType": "El kilometraje debe ser un número.",
     "mileageMin": "El kilometraje no puede ser negativo."
+  },
+  "auth": {
+    "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
+    "establishingConnection": "Estableciendo canal de autenticación seguro..."
   }
 }

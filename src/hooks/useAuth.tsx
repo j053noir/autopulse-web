@@ -1,12 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, ReactNode } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { User } from "@/types";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { api } from "@/services/api";
 
 interface AuthContextType {
-  user: User | null;
+  user: any;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, closeActiveSessions?: boolean) => Promise<void>;
@@ -17,10 +17,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+  const store = useAuthStore();
   const router = useRouter();
   const params = useParams();
 
@@ -29,71 +26,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * Verifica la validez de la sesión contra el endpoint seguro del servidor.
-   * Si la cookie HTTP-Only sigue siendo válida, cargará el perfil; de lo contrario, limpiará el estado.
+   * Realiza un refresco silencioso en el arranque para recuperar el accessToken si la cookie sigue siendo válida.
    */
   const checkSession = async () => {
-    setIsLoading(true);
+    store.setInitializing(true);
     try {
+      // 1. Intentar refresco silencioso usando la cookie HTTP-Only
+      const authData = await api.auth.refreshToken();
+      
+      // 2. Si tiene éxito, guardar el token de acceso en el store (se sincronizará con el SW)
+      store.setAccessToken(authData.accessToken);
+
+      // 3. Obtener el perfil del usuario utilizando el nuevo token activo
       const profile = await api.auth.getProfile();
-      setUser(profile);
-      setIsAuthenticated(true);
+      
+      // 4. Establecer la sesión completa en el store
+      store.setSession(profile, authData.accessToken);
     } catch (err) {
-      console.warn("La verificación de sesión falló o no hay cookie activa:", err);
-      setUser(null);
-      setIsAuthenticated(false);
+      console.warn("[Session Checker] No active session found or silent refresh failed:", err);
+      store.logout();
     } finally {
-      setIsLoading(false);
+      store.setInitializing(false);
     }
   };
 
-  // Validación de arranque para hidratar el estado global
-  useEffect(() => {
-    checkSession();
-  }, []);
-
   /**
-   * Realiza la petición de login. El navegador intercepta de forma transparente la directiva
-   * Set-Cookie del backend. Luego consultamos el perfil del usuario para poblar el estado local
-   * y redirigir con seguridad.
+   * Realiza la petición de login. El navegador recibe la cookie HTTP-Only de sesión.
+   * Guardamos el accessToken en Zustand (que lo envía al Service Worker) y obtenemos el perfil.
    */
   const login = async (email: string, password: string, closeActiveSessions = false) => {
-    setIsLoading(true);
+    store.setInitializing(true);
     try {
-      // Intentar iniciar sesión (esta llamada adjunta automáticamente la cookie en el navegador)
-      await api.auth.login(email, password, closeActiveSessions);
+      // Iniciar sesión y obtener el AuthDto (que contiene el accessToken)
+      const authData = await api.auth.login(email, password, closeActiveSessions);
       
-      // Obtener los datos del perfil activo a partir de la nueva cookie guardada
-      const profile = await api.auth.getProfile();
-      setUser(profile);
-      setIsAuthenticated(true);
+      // Guardar el accessToken en el store (sincroniza con el SW)
+      store.setAccessToken(authData.accessToken);
 
-      // Redirección inteligente: si venimos de ser bloqueados, volvemos a la página anterior
+      // Obtener los datos del perfil activo
+      const profile = await api.auth.getProfile();
+      
+      // Establecer sesión completa
+      store.setSession(profile, authData.accessToken);
+
+      // Redirección inteligente
       const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
       const returnUrl = searchParams?.get("returnUrl");
       
       router.push(returnUrl || `/${lang}/dashboard`);
     } catch (err) {
-      setUser(null);
-      setIsAuthenticated(false);
+      store.logout();
       throw err;
     } finally {
-      setIsLoading(false);
+      store.setInitializing(false);
     }
   };
 
   /**
-   * Cierra la sesión activa borrando la cookie en el backend y limpiando el estado global.
+   * Cierra la sesión activa borrando las cookies en el backend y limpiando Zustand / Service Worker.
    */
   const logout = async () => {
-    setIsLoading(true);
+    store.setInitializing(true);
     try {
       await api.auth.logout();
     } catch (err) {
-      console.error("Error al revocar la sesión en el servidor:", err);
+      console.error("[Session Server] Error revoking session on server:", err);
     } finally {
-      setUser(null);
-      setIsAuthenticated(false);
-      setIsLoading(false);
+      store.logout();
+      store.setInitializing(false);
       router.push(`/${lang}/auth/login`);
     }
   };
@@ -101,9 +101,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user,
-        isAuthenticated,
-        isLoading,
+        user: store.user,
+        isAuthenticated: store.isAuthenticated,
+        isLoading: store.isInitializing,
         login,
         logout,
         checkSession,

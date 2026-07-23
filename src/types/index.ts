@@ -26,6 +26,12 @@ export interface Auction {
   marquee?: string;
   model?: string;
   lastBidderName?: string;
+  isActive?: boolean;
+  vehicleTitle?: string;
+  vehicleBasePrice?: number;
+  minimumBidIncrement?: number;
+  category?: string;
+  documentStorageKey?: string;
 }
 
 export interface BidDto {

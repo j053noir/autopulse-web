@@ -138,6 +138,12 @@ export const api = {
         currency: item.currentPriceCurrency || item.startingPriceCurrency || "USD",
         endTime: item.endTime,
         imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80",
+        isActive: item.isActive,
+        vehicleTitle: item.vehicle?.title,
+        vehicleBasePrice: item.vehicle?.basePrice,
+        minimumBidIncrement: item.vehicle?.minimumBidIncrement,
+        category: item.vehicle?.category,
+        documentStorageKey: item.vehicle?.documentStorageKey,
       }));
     },
 
@@ -178,6 +184,12 @@ export const api = {
         marquee: item.vehicle?.marquee,
         model: item.vehicle?.model,
         lastBidderName,
+        isActive: item.isActive,
+        vehicleTitle: item.vehicle?.title,
+        vehicleBasePrice: item.vehicle?.basePrice,
+        minimumBidIncrement: item.vehicle?.minimumBidIncrement,
+        category: item.vehicle?.category,
+        documentStorageKey: item.vehicle?.documentStorageKey,
       };
     },
 

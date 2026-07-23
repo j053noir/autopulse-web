@@ -86,6 +86,7 @@ export function usePlaceBidMutation() {
       const id = variables.auctionId;
       queryClient.invalidateQueries({ queryKey: ["auction", id] });
       queryClient.invalidateQueries({ queryKey: ["auctions", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["auctions", "my-bids"] });
     },
   });
 }

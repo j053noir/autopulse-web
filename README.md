@@ -1,42 +1,104 @@
-# AutoPulse 🚗💨
+# AutoPulse Web Portal 🚗💨
 
-**AutoPulse** is a modern and professional real-time vehicle auction portal built on a scalable and high-performance architecture.
+**AutoPulse Web Portal** is a modern, responsive, and professional vehicle auction client dashboard built using the latest React and Next.js ecosystems. It features real-time bid updates, dynamic telemetry visualizations, and localized routing.
 
-## 🚀 Technologies
+---
 
-* **Framework:** Next.js 16.2 (App Router & Turbopack)
-* **Language:** TypeScript (Strict Typing)
-* **Styling:** Tailwind CSS v4 (CSS-First & PostCSS approach)
+## 🏛️ Architecture & Design Patterns
+
+The frontend application is built around modern UI architecture patterns that prioritize component reusability, high performance, and robust state management.
+
+### Key Architectural & Design Patterns
+
+1. **Compound Components Pattern**
+   - Implemented in UI building blocks such as `<Card>` and `<Tabs>` (under `src/components/ui`).
+   - Enables highly flexible, declarative layouts and avoids *prop drilling* by managing shared state implicitly through React Context.
+
+2. **Internationalization & Localization (i18n)**
+   - Leverages Next.js dynamic routing with language segments `/[lang]` (supporting English `en` and Spanish `es`).
+   - A custom **i18n Middleware** negotiates client locales by inspecting `Accept-Language` headers, redirecting to the default `/en` when no segment is specified.
+   - Translation dictionaries are stored under `/dictionaries` and loaded dynamically.
+
+3. **API Proxy & Cache Tuning (CarsXE Integration)**
+   - Integrates with the CarsXE API to retrieve high-quality vehicle images.
+   - **Security & CORS Bypass:** Requests are routed through a secure local API handler `/api/carsxe/images` to hide API tokens and bypass browser CORS restrictions.
+   - **TanStack React Query Cache Configuration:** To optimize API costs, image responses use a custom cache configuration: a **1-month development cache** (`staleTime` and `gcTime`).
+   - **Real-Time Data Bypass:** For personal user bids and active lists, caching is explicitly bypassed (`staleTime: 0`) to enforce a backend fetch and guarantee real-time bid sync.
+
+4. **Persistent Client-Side State (Zustand)**
+   - Utilizes **Zustand** (`useUIStore`) for lightweight, high-performance global state management.
+   - Manages UI themes (Light/Dark Mode toggle) and sidebar collapse states.
+   - Integrates with a React `useEffect` inside `providers.tsx` to inject or remove the `.dark` class from the `document` root.
+
+5. **Consolidated REST & SignalR API Client**
+   - Configured `fetch` wrapper automatically intercepts outgoing requests to inject JWT bearer tokens.
+   - Integrates `@microsoft/signalr` to connect directly to the backend's real-time hubs for instant bidding updates.
+
+---
+
+## 📂 Directory Structure
+
+```lic
+autopulse-web/
+├── dictionaries/                 # i18n Translation dictionaries (en.json, es.json)
+├── public/                       # Static assets (logos, icons)
+└── src/
+    ├── app/                      # Next.js App Router root
+    │   ├── [lang]/               # Dynamic language routing segment
+    │   │   ├── auctions/         # Active auction pages and detail dashboards
+    │   │   ├── auth/             # Login / Register views
+    │   │   ├── dashboard/        # User profile views
+    │   │   └── page.tsx          # Homepage view
+    │   ├── api/                  # Next.js local server routes
+    │   │   └── carsxe/           # CarsXE API image proxy
+    │   ├── globals.css           # Global Tailwind directives and tokens
+    │   └── providers.tsx         # Providers shell (QueryClient, Auth, Theme)
+    ├── components/               # React UI components
+    │   ├── auctions/             # Auction-specific UI (Bid list, telemetry widgets)
+    │   ├── layout/               # Header, Footer, Sidebar layouts
+    │   └── ui/                   # Reusable atomic UI (Cards, Modals, Lists)
+    ├── hooks/                    # Reusable custom React hooks (useCountdown, useAuth)
+    ├── lib/                      # Base configurations (SignalR hubs, QueryClient setups)
+    ├── services/                 # Backend HTTP API integration services
+    └── types/                    # Strict TypeScript type definitions
+```
+
+---
+
+## 📦 Technology Stack & Package Versions
+
+### Core Environment
+* **Framework:** Next.js `16.2.10` (App Router & Turbopack)
+* **Language:** TypeScript `5.x` (Strict Mode)
+* **Styling:** Tailwind CSS `v4.0` (PostCSS approach)
 * **Package Manager:** pnpm
 
-## 🛠️ Main Features
+### Main Dependencies
 
-* **Localization (i18n):** Dynamic routing using local segments `/[lang]` (supports Spanish `es` and English `en` by default).
-* **Proxy Handler (Middleware):** Intercepts requests and negotiates the language by detecting local headers, redirecting to `/en` by default.
-* **Compound Components:** Implementation of the *Compound Components* design pattern (such as `<Card>` and `<Tabs>`) to avoid Prop Drilling and simplify UI layout.
-* **Authentication Handler:** Integrated `AuthProvider` and `useAuth` hook that allows persisting user sessions and closing active sessions from other browsers.
-* **Consolidated API Service:** `fetch` client configuration with automatic injection of authorization tokens (Bearer) in headers.
-* **Interactive Modals:** Custom animated `Modal` wrapper implementing responsive `BidModal` (with currency-lock and custom bid validation) and `CreateAuctionModal` (with restricted currency validation).
-* **CarsXE API Proxy & Caching:** Dynamically retrieves high-quality vehicle images using a local Next.js proxy route `/api/carsxe/images` to avoid browser CORS blocks and secure the API key. Combines TanStack React Query with a **1-month development cache** (via custom `staleTime` and `gcTime`) to optimize billing costs.
-* **Theme System (Light / Dark Mode):** Class-based theme toggle managed via Zustand (`useUIStore`). Utilizes a React `useEffect` inside the providers layer to inject/remove the `.dark` class from the `document` root. Overrides system OS color scheme preferences to prevent light/dark mismatches.
-* **Dynamic Bidding & Validation:** Adapts quick bid increments and custom bid boundaries dynamically based on the vehicle's `minimumBidIncrement` from the backend. Bidding controls are automatically replaced by a finalized warning badge on closed or expired auctions.
-* **Consistently Unified Terminology:** Consistent use of "puja" and "pujar" across all Spanish dictionary files to avoid user confusion.
-* **Cache Bypass Tuning:** Disables caching (`staleTime: 0`) for personal user bids (`my-bids`) and active lists to bypass `localStorage` cache and force a backend fetch, ensuring real-time bid representation.
+| Package | Version | Description |
+| :--- | :--- | :--- |
+| `react` / `react-dom` | `19.2.4` | Component-driven runtime engine |
+| `@tanstack/react-query` | `5.101.2` | Server-state management and query caching |
+| `@tanstack/react-virtual` | `3.14.6` | Row virtualization for heavy auction lists |
+| `zustand` | `5.0.14` | Global state container for local UI configs |
+| `@microsoft/signalr` | `10.0.0` | Real-time WebSocket connection to backend hubs |
+| `react-hook-form` | `7.82.0` | Form handling and validation logic |
+| `zod` | `4.4.3` | Schema declaration and validation library |
+| `dompurify` | `3.4.12` | HTML sanitization for telemetry logs |
+| `react-hot-toast` | `2.6.0` | Animated push notifications in the UI |
+
+---
 
 ## 💻 Local Development
 
-### 1. Clone the repository and install dependencies
-
+### 1. Install Dependencies
 Make sure you have [pnpm](https://pnpm.io/) installed:
-
 ```bash
 pnpm install
 ```
 
 ### 2. Configure Environment Variables
-
-Create a `.env.local` file in the root of the project:
-
+Create a `.env.local` file in the root of the directory:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
 
@@ -45,22 +107,15 @@ CARSXE_API_URL=https://api.carsxe.com
 CARSXE_API_KEY=YOUR_CARSXE_API_KEY
 ```
 
-### 3. Start the development server
-
+### 3. Start Development Server
 ```bash
 pnpm dev
 ```
+The application will be running at [http://localhost:3000](http://localhost:3000).
 
-The portal will be available at [http://localhost:3000](http://localhost:3000).
-
-### 4. Build for production
-
-To validate types and package the portal:
-
+### 4. Build for Production
+To run TypeScript compilation and bundle optimized assets:
 ```bash
 pnpm build
 pnpm start
 ```
-
-
-

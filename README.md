@@ -18,6 +18,10 @@
 * **Consolidated API Service:** `fetch` client configuration with automatic injection of authorization tokens (Bearer) in headers.
 * **Interactive Modals:** Custom animated `Modal` wrapper implementing responsive `BidModal` (with currency-lock and custom bid validation) and `CreateAuctionModal` (with restricted currency validation).
 * **CarsXE API Proxy & Caching:** Dynamically retrieves high-quality vehicle images using a local Next.js proxy route `/api/carsxe/images` to avoid browser CORS blocks and secure the API key. Combines TanStack React Query with a **1-month development cache** (via custom `staleTime` and `gcTime`) to optimize billing costs.
+* **Theme System (Light / Dark Mode):** Class-based theme toggle managed via Zustand (`useUIStore`). Utilizes a React `useEffect` inside the providers layer to inject/remove the `.dark` class from the `document` root. Overrides system OS color scheme preferences to prevent light/dark mismatches.
+* **Dynamic Bidding & Validation:** Adapts quick bid increments and custom bid boundaries dynamically based on the vehicle's `minimumBidIncrement` from the backend. Bidding controls are automatically replaced by a finalized warning badge on closed or expired auctions.
+* **Consistently Unified Terminology:** Consistent use of "puja" and "pujar" across all Spanish dictionary files to avoid user confusion.
+* **Cache Bypass Tuning:** Disables caching (`staleTime: 0`) for personal user bids (`my-bids`) and active lists to bypass `localStorage` cache and force a backend fetch, ensuring real-time bid representation.
 
 ## 💻 Local Development
 
@@ -57,5 +61,6 @@ To validate types and package the portal:
 pnpm build
 pnpm start
 ```
+
 
 

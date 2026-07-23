@@ -9,13 +9,13 @@
       "sportsAuctions": "Subastas de Carros Deportivos",
       "sportsAuctionsDesc": "Explora las pujas activas de los vehículos deportivos verificados de AutoPulse.",
       "lastPurchases": "Tus últimas compras",
-      "lastPurchasesDesc": "Accede al registro cronológico de tus ofertas anteriores y vehículos adjudicados.",
+      "lastPurchasesDesc": "Accede al registro cronológico de tus pujas anteriores y vehículos adjudicados.",
       "portalTerms": "Términos del Portal",
-      "portalTermsDesc": "Las ofertas en AutoPulse son vinculantes. Lee con detenimiento las cláusulas de garantía."
+      "portalTermsDesc": "Las pujas en AutoPulse son vinculantes. Lee con detenimiento las cláusulas de garantía."
     },
     "rules": {
       "rule1": "Cada puja aumenta el precio mínimo establecido.",
-      "rule2": "Una vez realizada la oferta, esta no puede ser cancelada.",
+      "rule2": "Una vez realizada la puja, esta no puede ser cancelada.",
       "rule3": "El postor más alto al finalizar el cronómetro se adjudica la subasta."
     }
   },
@@ -23,11 +23,11 @@
     "bidSuccess": "¡Puja realizada con éxito!",
     "errors": {
       "prefix": "Error al realizar la puja",
-      "unauthorized": "Debes iniciar sesión para poder realizar una oferta.",
-      "forbidden": "No tienes los permisos requeridos para ofertar.",
-      "higherPrice": "El monto de la oferta debe ser mayor al precio actual.",
-      "closedOrExpired": "No se puede ofertar en una subasta cerrada o expirada.",
-      "generic": "Ocurrió un error inesperado al ofertar."
+      "unauthorized": "Debes iniciar sesión para poder realizar una puja.",
+      "forbidden": "No tienes los permisos requeridos para pujar.",
+      "higherPrice": "El monto de la puja debe ser mayor al precio actual.",
+      "closedOrExpired": "No se puede pujar en una subasta cerrada o expirada.",
+      "generic": "Ocurrió un error inesperado al pujar."
     }
   },
   "virtualPanel": {
@@ -43,25 +43,25 @@
     "title": "Panel Analítico de Subastas en Vivo",
     "bidActivity": "Actividad de Pujas",
     "activityLevel": "Alta (+45/min)",
-    "averageBid": "Oferta Promedio",
+    "averageBid": "Puja Promedio",
     "participants": "Participantes",
     "activeCount": "312 Activos"
   },
   "item": {
     "ends": "Termina",
     "lastBid": "Última Puja",
-    "bidButton": "Ofertar"
+    "bidButton": "Pujar"
   },
   "modals": {
     "placeBid": {
-      "title": "Realizar una Oferta",
-      "currentBid": "Oferta Actual",
-      "yourBid": "Monto de tu Oferta",
+      "title": "Realizar una Puja",
+      "currentBid": "Puja Actual",
+      "yourBid": "Monto de tu Puja",
       "minAmount": "Debe ser mayor que {min}",
-      "submit": "Ofertar",
-      "submitting": "Ofertando...",
+      "submit": "Pujar",
+      "submitting": "Pujando...",
       "placeholder": "Ingresa el monto",
-      "errorLabel": "La oferta debe ser mayor al precio actual"
+      "errorLabel": "La puja debe ser mayor al precio actual"
     },
     "createAuction": {
       "title": "Crear Nueva Subasta",
@@ -93,7 +93,8 @@
     "send": "Enviar",
     "connectionError": "Error de conexión en tiempo real. Los datos podrían no estar actualizados.",
     "errorGeneric": "Ocurrió un error al enviar tu puja.",
-    "numericWarning": "Por favor, introduce un valor numérico válido."
+    "numericWarning": "Por favor, introduce un valor numérico válido.",
+    "endedDesc": "Esta subasta ha finalizado y no acepta más ofertas."
   },
   "auctionDetail": {
     "notFound": "Subasta no encontrada",
@@ -114,17 +115,17 @@
     "securityPortalDesc": "Esta página cuenta con protección de X-Frame-Options: DENY contra secuestros de click (Clickjacking) y CSP estricta perimetral para neutralizar la inyección de código de terceros."
   },
   "userBids": {
-    "loginPrompt": "Inicia sesión para ver tus ofertas",
-    "loginRequiredDesc": "Debes acceder a tu cuenta para ver el registro de tus ofertas.",
+    "loginPrompt": "Inicia sesión para ver tus pujas",
+    "loginRequiredDesc": "Debes acceder a tu cuenta para ver el registro de tus pujas.",
     "live": "En vivo",
     "ended": "Finalizado",
     "placedOn": "Realizada el:",
-    "yourBid": "Tu Oferta",
+    "yourBid": "Tu Puja",
     "outbid": "Superado",
     "winning": "Ganando",
     "viewDetails": "Ver Detalles",
-    "noBids": "Sin ofertas activas",
-    "noBidsDesc": "Aún no has realizado ninguna oferta. ¡Explora las subastas activas para comenzar!"
+    "noBids": "Sin pujas activas",
+    "noBidsDesc": "Aún no has realizado ninguna puja. ¡Explora las subastas activas para comenzar!"
   },
   "createAuctionPage": {
     "title": "Publicar Nueva Subasta",

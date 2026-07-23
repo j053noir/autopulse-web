@@ -93,7 +93,8 @@
     "send": "Send",
     "connectionError": "Real-time connection error. Data might not be up to date.",
     "errorGeneric": "An error occurred while placing your bid.",
-    "numericWarning": "Please enter a valid numeric value."
+    "numericWarning": "Please enter a valid numeric value.",
+    "endedDesc": "This auction has ended and is no longer accepting bids."
   },
   "auctionDetail": {
     "notFound": "Auction not found",

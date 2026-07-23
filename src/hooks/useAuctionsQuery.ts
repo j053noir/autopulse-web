@@ -18,6 +18,7 @@ export function useAuctionsQuery() {
     queryKey: ["auctions", "active"],
     queryFn: () => api.auctions.getActive(),
     enabled: isAuthenticated,
+    staleTime: 0,
   });
 
   return {

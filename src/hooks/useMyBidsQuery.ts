@@ -18,6 +18,7 @@ export function useMyBidsQuery() {
     queryKey: ["auctions", "my-bids"],
     queryFn: () => api.auctions.getMyBids(),
     enabled: isAuthenticated,
+    staleTime: 0,
   });
 
   return {

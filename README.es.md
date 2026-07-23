@@ -30,9 +30,18 @@ La aplicación frontend está diseñada en torno a patrones de arquitectura mode
    - Administra el cambio de tema de colores (Modo Claro/Oscuro) y la expansión de la barra de navegación lateral.
    - Se integra con un efecto (`useEffect`) de React dentro de `providers.tsx` para inyectar o remover la clase `.dark` del elemento raíz del documento (`document`).
 
-5. **Cliente API Unificado con REST y SignalR**
-   - El cliente `fetch` configurado intercepta automáticamente las solicitudes salientes para inyectar los tokens JWT en los encabezados Bearer.
-   - Integra `@microsoft/signalr` para conectarse directamente con los Hubs de tiempo real del backend para recibir actualizaciones instantáneas de pujas.
+5. **Aislamiento Seguro de Tokens en Memoria via Proxy de Service Worker (Mitigación OWASP A03:2021)**
+   - **Inmunidad a XSS:** El `accessToken` se almacena estrictamente en la memoria RAM de un hilo de ejecución secundario (Service Worker `sw.js`). Al estar completamente aislado del DOM y de `window`, se neutraliza cualquier intento de exfiltración de tokens mediante ataques XSS.
+   - **Interceptación de Red Transparente:** El Service Worker actúa como un proxy interceptando las llamadas fetch/XHR hacia el backend, inyectando el encabezado `Authorization: Bearer <token>` directamente en tránsito a nivel de red.
+   - **Configuración Dinámica:** La URL base de la API (`NEXT_PUBLIC_API_URL`) se pasa dinámicamente al Service Worker tras su registro mediante canales de mensajería (`postMessage`).
+
+6. **Cola de Refresco de Tokens Única (Single-Flight) e Inicialización Silenciosa**
+   - **Mecanismo de Semáforo (Single-Flight Lock):** El cliente HTTP intercepta errores `401 Unauthorized`. Si hay múltiples peticiones concurrentes que fallan con 401, el semáforo bloquea peticiones de refresco duplicadas, metiéndolas en una cola (`failedQueue`) que se resuelve de golpe una vez obtenido el nuevo token.
+   - **Inicialización Silenciosa (App Bootstrapping):** Tras una recarga de página (F5), el estado de sesión se hidrata de forma transparente mediante un refresco silencioso (`POST /api/auth/refresh-token`), validando la cookie HTTP-Only `autopulse-refresh-token`.
+   - **Control de Acceso en el Servidor (Proxy/Middleware):** El archivo `src/proxy.ts` inspecciona en el servidor la existencia de la cookie `autopulse-refresh-token` en rutas protegidas (`/dashboard` y `/auctions/create`), bloqueando el renderizado de forma temprana.
+
+7. **Cliente de SignalR Unificado**
+   - Integra `@microsoft/signalr` para conectarse en tiempo real a los Hubs del backend y recibir actualizaciones instantáneas de las subastas.
 
 ---
 

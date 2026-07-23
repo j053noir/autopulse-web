@@ -30,8 +30,17 @@ The frontend application is built around modern UI architecture patterns that pr
    - Manages UI themes (Light/Dark Mode toggle) and sidebar collapse states.
    - Integrates with a React `useEffect` inside `providers.tsx` to inject or remove the `.dark` class from the `document` root.
 
-5. **Consolidated REST & SignalR API Client**
-   - Configured `fetch` wrapper automatically intercepts outgoing requests to inject JWT bearer tokens.
+5. **Secure In-Memory Token Isolation via Service Worker Proxy (OWASP A03:2021 Mitigation)**
+   - **XSS Immunity:** The `accessToken` is stored strictly in the RAM memory of an isolated background browser thread (Service Worker `sw.js`). It is completely hidden from the main DOM and the `window` context, rendering XSS token exfiltration attacks impossible.
+   - **Transparent Network Interception:** The Service Worker intercepts outgoing XMLHttpRequests/fetch calls directed to the API backend, dynamically injecting the `Authorization: Bearer <token>` header at the network level.
+   - **Dynamic Environment Configuration:** Environmental variables such as the backend API URL (`NEXT_PUBLIC_API_URL`) are propagated dynamically to the Service Worker upon registration via a post-message channel.
+
+6. **Single-Flight Token Refresh Queue & Silent Bootstrapping**
+   - **Single-Flight Lock:** The network client centralizes error interception (`401 Unauthorized`). Under concurrent failed requests, a lock prevents multiple refresh requests from hitting the server by queuing them in a `failedQueue` and resolving them altogether once a new access token is obtained.
+   - **Silent Bootstrapping:** In-memory session state is hydrated upon reloading (F5) via a silent refresh endpoint (`POST /api/auth/refresh-token`), validating the HTTP-Only cookie `autopulse-refresh-token` and fetching the new session profile.
+   - **Server-Side Edge Control (Middleware/Proxy):** Next.js middleware proxy (`src/proxy.ts`) validates the presence of the `autopulse-refresh-token` cookie before resolving requests to protected paths (`/dashboard` and `/auctions/create`), immediately redirecting unauthorized users.
+
+7. **Consolidated SignalR Client**
    - Integrates `@microsoft/signalr` to connect directly to the backend's real-time hubs for instant bidding updates.
 
 ---

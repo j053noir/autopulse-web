@@ -9,12 +9,33 @@ import {
   UserBid,
   PreSignedUrlResponseDto,
 } from "@/types";
+import { useAuthStore } from "@/stores/useAuthStore";
+import toast from "react-hot-toast";
+import en from "../../dictionaries/en.json";
+import es from "../../dictionaries/es.json";
 
 if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value: any) => void;
+  reject: (reason: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 /**
  * Cliente de red seguro que propaga credenciales (cookies HTTP-Only) en todas las llamadas.
@@ -50,7 +71,50 @@ const fetchWithCredentials = async (url: string, options: RequestInit = {}): Pro
     }
   }
 
-  return fetch(url, finalOptions);
+  const response = await fetch(url, finalOptions);
+
+  // Interceptar errores 401 Unauthorized para lanzar flujo de refresco automático
+  if (response.status === 401 && !url.includes("/api/auth/refresh-token")) {
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          resolve: () => {
+            resolve(fetch(url, finalOptions));
+          },
+          reject: (err) => reject(err),
+        });
+      });
+    }
+
+    isRefreshing = true;
+
+    try {
+      const authData = await api.auth.refreshToken();
+      useAuthStore.getState().setAccessToken(authData.accessToken);
+      
+      processQueue(null, authData.accessToken);
+      
+      return fetch(url, finalOptions);
+    } catch (refreshError) {
+      processQueue(refreshError, null);
+      
+      useAuthStore.getState().logout();
+      
+      if (typeof window !== "undefined") {
+        const pathname = window.location.pathname;
+        const lang = pathname.split("/")[1] === "es" ? "es" : "en";
+        const dict = lang === "es" ? es : en;
+        toast.error(dict.auth.sessionExpired);
+        window.location.href = `/${lang}/auth/login`;
+      }
+      
+      throw refreshError;
+    } finally {
+      isRefreshing = false;
+    }
+  }
+
+  return response;
 };
 
 export const api = {
@@ -59,7 +123,7 @@ export const api = {
      * Procesa la autenticación del usuario.
      * La cookie HTTP-Only 'Set-Cookie' es gestionada de manera nativa por el navegador.
      */
-    async login(email: string, password: string, closeActiveSessions: boolean = false): Promise<User> {
+    async login(email: string, password: string, closeActiveSessions: boolean = false): Promise<AuthDto> {
       const response = await fetchWithCredentials(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         body: JSON.stringify({ email, password, closeActiveSessions }),
@@ -70,9 +134,7 @@ export const api = {
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
 
-      // El backend puede retornar información básica del usuario. Si no la hay, se resuelve vía getProfile.
-      const data = await response.json();
-      return data.user || data;
+      return response.json();
     },
 
     async register(username: string, email: string, password: string): Promise<{ id: string }> {
@@ -100,6 +162,20 @@ export const api = {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Error al cerrar sesión");
       }
+    },
+
+    async refreshToken(): Promise<AuthDto> {
+      const response = await fetchWithCredentials(`${BASE_URL}/api/auth/refresh-token`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al refrescar token");
+      }
+
+      return response.json();
     },
 
     async getProfile(): Promise<User> {

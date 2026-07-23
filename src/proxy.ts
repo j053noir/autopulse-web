@@ -8,20 +8,20 @@ export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Control de acceso perimetral de sesión (Middleware de seguridad)
-  // Verifica si la ruta solicitada corresponde al dashboard protegido (localizado o no)
-  const isDashboardRoute = pathname.match(/^\/(?:[a-z]{2}\/)?dashboard(?:\/.*)?$/);
+  // Verifica si la ruta solicitada corresponde al dashboard protegido o a la creación de subastas (localizado o no)
+  const isProtectedRoute = pathname.match(/^\/(?:[a-z]{2}\/)?(?:dashboard|auctions\/create)(?:\/.*)?$/);
 
-  if (isDashboardRoute) {
-    // Al ejecutarse del lado del servidor, lee la cookie HTTP-Only 'autopulse-session'
-    const sessionCookie = request.cookies.get("autopulse-session")?.value;
+  if (isProtectedRoute) {
+    // Al ejecutarse del lado del servidor, lee la cookie HTTP-Only 'autopulse-refresh-token'
+    const refreshToken = request.cookies.get("autopulse-refresh-token")?.value;
 
-    if (!sessionCookie) {
+    if (!refreshToken) {
       // Extrae el idioma de la URL para redirigir a la vista de login localizada correcta
       const langMatch = pathname.match(/^\/([a-z]{2})/);
       const lang = langMatch ? langMatch[1] : defaultLocale;
 
       const loginUrl = new URL(`/${lang}/auth/login`, request.url);
-      loginUrl.searchParams.set("returnUrl", pathname);
+      loginUrl.searchParams.set("returnUrl", pathname + request.nextUrl.search);
       
       return NextResponse.redirect(loginUrl);
     }

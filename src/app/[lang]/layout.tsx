@@ -35,19 +35,17 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-brand-dark dark:text-white transition-colors duration-300">
         <Providers>
-          <AuthProvider>
-            {children}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: "#0f172a",
-                  color: "#fff",
-                  border: "1px solid #1e293b",
-                },
-              }}
-            />
-          </AuthProvider>
+          {children}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: "#0f172a",
+                color: "#fff",
+                border: "1px solid #1e293b",
+              },
+            }}
+          />
         </Providers>
       </body>
     </html>

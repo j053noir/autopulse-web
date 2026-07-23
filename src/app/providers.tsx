@@ -8,6 +8,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useGlobalSignalR } from "@/hooks/useGlobalSignalR";
 import { useUIStore } from "@/hooks/useUIStore";
 
+import { AuthProvider } from "@/hooks/useAuth";
+import { SWAuthProvider } from "@/components/auth/sw-auth-provider";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   // Suscribirse de manera global al evento OnAuctionCreated de SignalR
   useGlobalSignalR();
@@ -50,7 +53,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   if (!persister) {
     return (
       <QueryClientProvider client={queryClient}>
-        {children}
+        <AuthProvider>
+          <SWAuthProvider>
+            {children}
+          </SWAuthProvider>
+        </AuthProvider>
         {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools initialIsOpen={false} />
         )}
@@ -63,7 +70,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      {children}
+      <AuthProvider>
+        <SWAuthProvider>
+          {children}
+        </SWAuthProvider>
+      </AuthProvider>
       {process.env.NODE_ENV === "development" && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}

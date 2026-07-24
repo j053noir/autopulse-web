@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import en from "../../dictionaries/en.json";
 import es from "../../dictionaries/es.json";
 
+import { trace } from "@opentelemetry/api";
+
 if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
@@ -72,6 +74,14 @@ const fetchWithCredentials = async (url: string, options: RequestInit = {}): Pro
   }
 
   const response = await fetch(url, finalOptions);
+
+  // Log TraceId in development mode on 400 or 500 errors
+  if (!response.ok && (response.status === 400 || response.status === 500) && process.env.NODE_ENV === "development") {
+    const traceId = trace.getActiveSpan()?.spanContext().traceId;
+    if (traceId) {
+      console.warn(`[Telemetry] Error ${response.status} en ${url}. TraceId: ${traceId}`);
+    }
+  }
 
   // Interceptar errores 401 Unauthorized para lanzar flujo de refresco automático
   if (response.status === 401 && !url.includes("/api/auth/refresh-token")) {

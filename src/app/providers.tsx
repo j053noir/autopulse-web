@@ -10,6 +10,7 @@ import { useUIStore } from "@/hooks/useUIStore";
 
 import { AuthProvider } from "@/hooks/useAuth";
 import { SWAuthProvider } from "@/components/auth/sw-auth-provider";
+import { TelemetryProvider } from "@/components/telemetry/telemetry-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Suscribirse de manera global al evento OnAuctionCreated de SignalR
@@ -53,11 +54,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   if (!persister) {
     return (
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <SWAuthProvider>
-            {children}
-          </SWAuthProvider>
-        </AuthProvider>
+        <TelemetryProvider>
+          <AuthProvider>
+            <SWAuthProvider>
+              {children}
+            </SWAuthProvider>
+          </AuthProvider>
+        </TelemetryProvider>
         {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools initialIsOpen={false} />
         )}
@@ -70,11 +73,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <AuthProvider>
-        <SWAuthProvider>
-          {children}
-        </SWAuthProvider>
-      </AuthProvider>
+      <TelemetryProvider>
+        <AuthProvider>
+          <SWAuthProvider>
+            {children}
+          </SWAuthProvider>
+        </AuthProvider>
+      </TelemetryProvider>
       {process.env.NODE_ENV === "development" && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}

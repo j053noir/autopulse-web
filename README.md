@@ -1,47 +1,63 @@
 # AutoPulse Web Portal 🚗💨
 
-**AutoPulse Web Portal** is a modern, responsive, and professional vehicle auction client dashboard built using the latest React and Next.js ecosystems. It features real-time bid updates, dynamic telemetry visualizations, and localized routing.
+**AutoPulse Web Portal** is a modern, responsive, and professional vehicle auction client dashboard built using React 19 and Next.js 16. It features real-time WebSocket bid updates, dynamic telemetry performance visualizations, OWASP-compliant token isolation, and localized routing.
 
 ---
 
-## 🏛️ Architecture & Design Patterns
+## 🏛️ System Design & C4 Architecture
 
-The frontend application is built around modern UI architecture patterns that prioritize component reusability, high performance, and robust state management.
+The frontend application is designed around modern UI architecture patterns that prioritize component reusability, high performance, real-time connectivity, and secure API client communications.
 
-### Key Architectural & Design Patterns
+### C4 Level 2: Web Portal Container & Integration Architecture
 
-1. **Compound Components Pattern**
-   - Implemented in UI building blocks such as `<Card>` and `<Tabs>` (under `src/components/ui`).
-   - Enables highly flexible, declarative layouts and avoids *prop drilling* by managing shared state implicitly through React Context.
+The following diagram illustrates how the Next.js Web Portal coordinates client-side state, worker isolation, dynamic localization, and WebSocket connections with the backend services.
 
-2. **Internationalization & Localization (i18n)**
-   - Leverages Next.js dynamic routing with language segments `/[lang]` (supporting English `en` and Spanish `es`).
-   - A custom **i18n Middleware** negotiates client locales by inspecting `Accept-Language` headers, redirecting to the default `/en` when no segment is specified.
-   - Translation dictionaries are stored under `/dictionaries` and loaded dynamically.
+```mermaid
+C4Container
+    title Web Portal System Design & Service Integration
 
-3. **API Proxy & Cache Tuning (CarsXE Integration)**
-   - Integrates with the CarsXE API to retrieve high-quality vehicle images.
-   - **Security & CORS Bypass:** Requests are routed through a secure local API handler `/api/carsxe/images` to hide API tokens and bypass browser CORS restrictions.
-   - **TanStack React Query Cache Configuration:** To optimize API costs, image responses use a custom cache configuration: a **1-month development cache** (`staleTime` and `gcTime`).
-   - **Real-Time Data Bypass:** For personal user bids and active lists, caching is explicitly bypassed (`staleTime: 0`) to enforce a backend fetch and guarantee real-time bid sync.
+    Person(user, "User / Bidder", "Browses live auctions, submits bids, and runs telemetry benchmarks.")
 
-4. **Persistent Client-Side State (Zustand)**
-   - Utilizes **Zustand** (`useUIStore`) for lightweight, high-performance global state management.
-   - Manages UI themes (Light/Dark Mode toggle) and sidebar collapse states.
-   - Integrates with a React `useEffect` inside `providers.tsx` to inject or remove the `.dark` class from the `document` root.
+    SystemBound(webPortal, "AutoPulse Web Portal Container") {
+        Container(appRouter, "Next.js App Router", "Next.js 16 (App Router)", "Handles dynamic i18n routing (/[lang]), layouts, and page views.")
+        Container(serviceWorker, "Service Worker Proxy", "JavaScript (sw.js)", "Stores access token in isolated RAM memory; intercepts network requests and attaches Bearer header.")
+        Container(queryClient, "TanStack React Query", "React Query v5", "Manages server state, caching, and optimistic UI updates.")
+        Container(signalrClient, "SignalR WebSockets", "@microsoft/signalr", "Subscribes to live bidding updates and auction state changes from backend hubs.")
+        Container(zustandStore, "UI Store", "Zustand", "Manages client UI state (Dark/Light theme, sidebar toggle).")
+    }
 
-5. **Secure In-Memory Token Isolation via Service Worker Proxy (OWASP A03:2021 Mitigation)**
-   - **XSS Immunity:** The `accessToken` is stored strictly in the RAM memory of an isolated background browser thread (Service Worker `sw.js`). It is completely hidden from the main DOM and the `window` context, rendering XSS token exfiltration attacks impossible.
-   - **Transparent Network Interception:** The Service Worker intercepts outgoing XMLHttpRequests/fetch calls directed to the API backend, dynamically injecting the `Authorization: Bearer <token>` header at the network level.
-   - **Dynamic Environment Configuration:** Environmental variables such as the backend API URL (`NEXT_PUBLIC_API_URL`) are propagated dynamically to the Service Worker upon registration via a post-message channel.
+    System(apiBackend, "AutoPulse Backend Platform", ".NET 10 API & Workers", "Executes CQRS Commands, Sagas (AuctionBookingSaga), Polly Resilience Pipelines, and Span Telemetry Parsing.")
 
-6. **Single-Flight Token Refresh Queue & Silent Bootstrapping**
-   - **Single-Flight Lock:** The network client centralizes error interception (`401 Unauthorized`). Under concurrent failed requests, a lock prevents multiple refresh requests from hitting the server by queuing them in a `failedQueue` and resolving them altogether once a new access token is obtained.
-   - **Silent Bootstrapping:** In-memory session state is hydrated upon reloading (F5) via a silent refresh endpoint (`POST /api/auth/refresh-token`), validating the HTTP-Only cookie `autopulse-refresh-token` and fetching the new session profile.
-   - **Server-Side Edge Control (Middleware/Proxy):** Next.js middleware proxy (`src/proxy.ts`) validates the presence of the `autopulse-refresh-token` cookie before resolving requests to protected paths (`/dashboard` and `/auctions/create`), immediately redirecting unauthorized users.
+    Rel(user, appRouter, "Navigates & interacts", "HTTPS")
+    Rel(appRouter, serviceWorker, "Initializes & posts config", "postMessage API")
+    Rel(serviceWorker, apiBackend, "Intercepts & proxies API calls", "HTTPS + Bearer Token")
+    Rel(signalrClient, apiBackend, "Real-time bi-directional streaming", "WebSockets / WSS")
+    Rel(queryClient, serviceWorker, "Issues query & mutation requests", "Fetch API")
+```
 
-7. **Consolidated SignalR Client**
-   - Integrates `@microsoft/signalr` to connect directly to the backend's real-time hubs for instant bidding updates.
+---
+
+## 💡 Key Architectural & Integration Patterns
+
+### 1. Integration with Backend Sagas & Real-Time Bidding
+- **WebSocket Streaming:** Integrates `@microsoft/signalr` to bind directly to the backend's `AuctionBookingSaga` state updates.
+- When an auction concludes, state updates (e.g. `PaymentProcessing`, `Completed`, or `Compensating`) are pushed live to the browser without requiring manual page reloads.
+
+### 2. Zero-Allocation Telemetry Benchmark Visualizer
+- The web dashboard includes an interactive benchmarking UI that triggers the backend endpoint `POST /api/telemetry/benchmark`.
+- Visualizes real-time performance deltas comparing standard `string.Split` parsing against zero-allocation `ReadOnlySpan<char>` parsing, rendering execution time graphs and Garbage Collector (Gen 0/1/2) collection counts.
+
+### 3. Secure In-Memory Token Isolation (OWASP A03:2021 Mitigation)
+- **XSS Immunity:** The `accessToken` is stored strictly in the RAM memory of an isolated background browser thread (Service Worker `sw.js`). It is completely hidden from the main DOM and the `window` context, rendering XSS token exfiltration attacks impossible.
+- **Transparent Network Interception:** The Service Worker intercepts outgoing requests directed to the API backend, dynamically injecting the `Authorization: Bearer <token>` header at the network level.
+
+### 4. Single-Flight Token Refresh Queue & Silent Bootstrapping
+- **Single-Flight Lock:** The network client centralizes error interception (`401 Unauthorized`). Under concurrent failed requests, a lock prevents multiple refresh requests from hitting the server by queuing them in a `failedQueue` and resolving them altogether once a new access token is obtained.
+- **Silent Bootstrapping:** In-memory session state is hydrated upon reloading (F5) via a silent refresh endpoint (`POST /api/auth/refresh-token`), validating the HTTP-Only cookie `autopulse-refresh-token`.
+
+### 5. Internationalization & Localization (i18n)
+- Leverages Next.js dynamic routing with language segments `/[lang]` (supporting English `en` and Spanish `es`).
+- A custom **i18n Middleware** negotiates client locales by inspecting `Accept-Language` headers, redirecting to the default `/en` when no segment is specified.
 
 ---
 
@@ -50,7 +66,7 @@ The frontend application is built around modern UI architecture patterns that pr
 ```lic
 autopulse-web/
 ├── dictionaries/                 # i18n Translation dictionaries (en.json, es.json)
-├── public/                       # Static assets (logos, icons)
+├── public/                       # Static assets & sw.js Service Worker
 └── src/
     ├── app/                      # Next.js App Router root
     │   ├── [lang]/               # Dynamic language routing segment

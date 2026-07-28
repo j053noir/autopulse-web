@@ -18,7 +18,7 @@ C4Container
 
     Person(user, "User / Bidder", "Browses live auctions, submits bids, and runs telemetry benchmarks.")
 
-    SystemBound(webPortal, "AutoPulse Web Portal Container") {
+    System_Boundary(webPortal, "AutoPulse Web Portal Container") {
         Container(appRouter, "Next.js App Router", "Next.js 16 (App Router)", "Handles dynamic i18n routing (/[lang]), layouts, and page views.")
         Container(serviceWorker, "Service Worker Proxy", "JavaScript (sw.js)", "Stores access token in isolated RAM memory; intercepts network requests and attaches Bearer header.")
         Container(queryClient, "TanStack React Query", "React Query v5", "Manages server state, caching, and optimistic UI updates.")
